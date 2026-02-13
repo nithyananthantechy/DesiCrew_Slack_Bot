@@ -1,0 +1,32 @@
+{
+    "issue_type": "software",
+    "title": "Remote Application Issues",
+    "description": "Troubleshooting login, freezing, and disconnection in remote apps.",
+    "keywords": [
+        "remote",
+        "app",
+        "freeze",
+        "login",
+        "disconnect",
+        "citrix",
+        "rdp"
+    ],
+    "steps": [
+        {
+            "title": "Session Reset",
+            "instruction": "Logout and log back in. Restart your system."
+        },
+        {
+            "title": "Internet Check",
+            "instruction": "Verify your internet stability as remote apps require constant connectivity."
+        },
+        {
+            "title": "Alternative Test",
+            "instruction": "Try logging in from another system to see if the issue is profile-specific."
+        },
+        {
+            "title": "Community Check",
+            "instruction": "Confirm if others are facing same issue. If yes, raise an IT ticket immediately. Do not share credentials."
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "issue_type": "network",
+    "title": "LAN/Network Connection Issues",
+    "description": "Troubleshoot wired network connection problems.",
+    "keywords": [
+        "internet",
+        "network",
+        "lan",
+        "ethernet",
+        "connection",
+        "offline"
+    ],
+    "steps": [
+        {
+            "title": "Check Physical Connection",
+            "instruction": "Please check if your Ethernet cable is properly plugged into both your computer and the wall port/switch. try unplugging and replugging it until you hear a click."
+        },
+        {
+            "title": "Check IP Address",
+            "instruction": "Open a terminal/command prompt and run `ipconfig` (Windows) or `ifconfig` (Mac/Linux). Check if you have a valid IP address (starts with 10.x, 192.x, or 172.x)."
+        },
+        {
+            "title": "Restart Network Adapter",
+            "instruction": "Go to Network Settings, disable your Ethernet adapter, wait 10 seconds, and enable it again."
+        },
+        {
+            "title": "Ping Gateway",
+            "instruction": "Try to ping your default gateway. Run `ping <gateway_ip>` in your terminal."
+        },
+        {
+            "title": "Restart Computer",
+            "instruction": "If all else fails, a simple restart can often fix network driver issues."
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "slack-ai-helpdesk-bot",
+  "version": "1.0.0",
+  "description": "AI-powered IT Helpdesk Bot for Slack",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@slack/bolt": "^3.17.0",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "fs-extra": "^11.2.0",
+    "mammoth": "^1.6.0",
+    "marked": "^11.1.0",
+    "node-cache": "^5.1.2",
+    "openai": "^4.20.1",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

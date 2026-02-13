@@ -1,0 +1,35 @@
+{
+    "issue_type": "freshservice",
+    "title": "Freshservice Portal Access",
+    "description": "How to activate and login to the Freshservice ticketing system.",
+    "keywords": [
+        "freshservice",
+        "portal",
+        "login",
+        "activate",
+        "ticketing",
+        "password"
+    ],
+    "steps": [
+        {
+            "title": "Go to Portal",
+            "instruction": "Navigate to: https://desicrew.freshservice.com/support/home"
+        },
+        {
+            "title": "Login Initiation",
+            "instruction": "Click on the 'Login' button at the top right."
+        },
+        {
+            "title": "Enter Email",
+            "instruction": "Enter your registered Email ID."
+        },
+        {
+            "title": "Activate Account",
+            "instruction": "Check your email for an activation link and follow the instructions to activate your account."
+        },
+        {
+            "title": "Set Password",
+            "instruction": "Create a secure password and login to start raising tickets."
+        }
+    ]
+}

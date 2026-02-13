@@ -1,0 +1,31 @@
+{
+    "issue_type": "network",
+    "title": "Network (LAN / Internet) Issues",
+    "description": "Troubleshooting wired network and internet connectivity.",
+    "keywords": [
+        "lan",
+        "internet",
+        "network",
+        "cable",
+        "offline",
+        "port"
+    ],
+    "steps": [
+        {
+            "title": "Cable Check",
+            "instruction": "Check the LAN cable connection at both ends. Try a different LAN port if available."
+        },
+        {
+            "title": "System Restart",
+            "instruction": "Restart your system and check the network icon for status."
+        },
+        {
+            "title": "Cross-Device Test",
+            "instruction": "Test another device on the same connection to rule out device-specific issues."
+        },
+        {
+            "title": "Verification",
+            "instruction": "If the network is down for many users or the issue persists, raise an IT ticket. Do not tamper with network equipment."
+        }
+    ]
+}

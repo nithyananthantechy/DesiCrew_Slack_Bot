@@ -1,0 +1,34 @@
+{
+    "issue_type": "printer",
+    "title": "Printer Troubleshooting Guide",
+    "description": "Fix common printer connectivity and jamming issues.",
+    "keywords": [
+        "printer",
+        "print",
+        "jam",
+        "offline",
+        "paper"
+    ],
+    "steps": [
+        {
+            "title": "Check Power and Connection",
+            "instruction": "Ensure the printer is turned on and connected to the network or your computer via USB."
+        },
+        {
+            "title": "Clear Print Queue",
+            "instruction": "Open 'Printers & Scanners' settings, select your printer, click 'Open Queue', and cancel any stuck documents."
+        },
+        {
+            "title": "Check for Paper Jams",
+            "instruction": "Open the printer trays and access doors to check for any crumpled or stuck paper. Remove gently."
+        },
+        {
+            "title": "Restart Printer Spooler",
+            "instruction": "On Windows, open Services (services.msc), find 'Print Spooler', right-click and select 'Restart'."
+        },
+        {
+            "title": "Re-add Printer",
+            "instruction": "Remove the printer from your system settings and add it again."
+        }
+    ]
+}

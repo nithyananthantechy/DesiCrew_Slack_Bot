@@ -1,0 +1,30 @@
+{
+    "issue_type": "hardware",
+    "title": "Webcam Troubleshooting",
+    "description": "Resolving webcam connection and permission issues.",
+    "keywords": [
+        "webcam",
+        "camera",
+        "video",
+        "permission",
+        "usb"
+    ],
+    "steps": [
+        {
+            "title": "Physical Connection",
+            "instruction": "Check USB connection. Try another USB port."
+        },
+        {
+            "title": "System & App Check",
+            "instruction": "Restart your system. Close other apps that might be using the camera (Zoom, Teams, etc.)."
+        },
+        {
+            "title": "Settings & Permissions",
+            "instruction": "Check camera permissions in your OS settings and ensure the correct camera is selected in the app."
+        },
+        {
+            "title": "Raise Ticket",
+            "instruction": "If needed, raise a ticket with: Asset ID, Error screenshot, App name, and steps tried."
+        }
+    ]
+}

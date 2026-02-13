@@ -1,0 +1,31 @@
+{
+    "issue_type": "hardware",
+    "title": "Monitor & CPU Power Issues",
+    "description": "Troubleshooting power and display issues for desktop systems.",
+    "keywords": [
+        "monitor",
+        "cpu",
+        "power",
+        "switch",
+        "display",
+        "cable"
+    ],
+    "steps": [
+        {
+            "title": "Cable & Switch Check",
+            "instruction": "Check power cables for monitor and CPU. Ensure power switches are ON."
+        },
+        {
+            "title": "Socket & Cable Swap",
+            "instruction": "Try a different power socket. Try a known working power cable if available (do not use damaged cables)."
+        },
+        {
+            "title": "Reset",
+            "instruction": "Restart both the monitor and CPU."
+        },
+        {
+            "title": "Raise Ticket",
+            "instruction": "If no power, raise a ticket with: Asset ID, issue description, and steps you already tried."
+        }
+    ]
+}

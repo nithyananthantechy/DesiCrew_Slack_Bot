@@ -1,0 +1,31 @@
+{
+    "issue_type": "biometric",
+    "title": "Biometric Access Request",
+    "description": "SOP for biometric access requests and troubleshooting.",
+    "keywords": [
+        "biometric",
+        "access",
+        "denied",
+        "fingerprint",
+        "entry",
+        "floor"
+    ],
+    "steps": [
+        {
+            "title": "Manager & HR Check",
+            "instruction": "Ensure you have manager approval and HR onboarding is completed with an active Employee ID."
+        },
+        {
+            "title": "Physical Check",
+            "instruction": "Try cleaning your finger (ensure it's dry). Check if the device has power and if others are facing same issue."
+        },
+        {
+            "title": "Prepare Ticket Details",
+            "instruction": "If still not working, prepare: Name, ID, Dept, Floor/Location, Type of Request, and Manager Approval info."
+        },
+        {
+            "title": "Raise Support Ticket",
+            "instruction": "Raise a ticket at https://desicrew.freshservice.com with the details prepared in the previous step."
+        }
+    ]
+}

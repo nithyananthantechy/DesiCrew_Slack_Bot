@@ -1,0 +1,35 @@
+{
+    "issue_type": "system",
+    "title": "System Performance & Login Issues",
+    "description": "Troubleshooting slow systems, login problems, and application crashes.",
+    "keywords": [
+        "slow",
+        "login",
+        "crash",
+        "freeze",
+        "error",
+        "system"
+    ],
+    "steps": [
+        {
+            "title": "Restart System",
+            "instruction": "Perform a full restart of your system to clear temporary issues."
+        },
+        {
+            "title": "Check Connectivity",
+            "instruction": "Ensure your internet/network connection is stable."
+        },
+        {
+            "title": "App Reset",
+            "instruction": "Logout and log back in. Close and reopen the problematic application."
+        },
+        {
+            "title": "Resource Management",
+            "instruction": "End unnecessary background applications to free up system resources."
+        },
+        {
+            "title": "Verification",
+            "instruction": "If the issue persists or multiple users are affected, raise an IT ticket. Do not install unauthorized software."
+        }
+    ]
+}

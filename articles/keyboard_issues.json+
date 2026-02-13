@@ -1,0 +1,35 @@
+{
+    "issue_type": "hardware",
+    "title": "Keyboard Troubleshooting",
+    "description": "Resolving issues with unresponsive or malfunctioning keyboards.",
+    "keywords": [
+        "keyboard",
+        "keys",
+        "usb",
+        "wireless",
+        "typing",
+        "battery"
+    ],
+    "steps": [
+        {
+            "title": "Physical Connection",
+            "instruction": "Check USB connection or battery. Try a different USB port."
+        },
+        {
+            "title": "System Restart",
+            "instruction": "Restart your system to refresh hardware drivers."
+        },
+        {
+            "title": "Cross-PC Test",
+            "instruction": "Test the keyboard on another PC to see if the hardware itself is faulty."
+        },
+        {
+            "title": "Software Check",
+            "instruction": "Check your language/layout settings. Clean the keys if dust is visible (do not remove keys forcibly)."
+        },
+        {
+            "title": "Ticket Details",
+            "instruction": "If needed, raise a ticket with: Asset ID, Type (Wired/Wireless), and specific keys not working."
+        }
+    ]
+}

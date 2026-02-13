@@ -1,0 +1,23 @@
+# Files to exclude from production deployment
+node_modules/
+.git/
+.gitignore
+*.log
+debug_events.log
+startup.log
+test_*.js
+verify_*.js
+list_models_raw.js
+
+# Development files
+.env.example
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

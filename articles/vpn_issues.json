@@ -1,0 +1,35 @@
+{
+    "issue_type": "vpn",
+    "title": "VPN Connectivity Troubleshooting",
+    "description": "Resolving VPN connection, authentication, and speed issues.",
+    "keywords": [
+        "vpn",
+        "connect",
+        "authentication",
+        "disconnect",
+        "slow",
+        "hotspot"
+    ],
+    "steps": [
+        {
+            "title": "Internet & Time Check",
+            "instruction": "Verify your internet connection and ensure your system date/time settings are correct."
+        },
+        {
+            "title": "App & System Reset",
+            "instruction": "Restart the VPN application and your system."
+        },
+        {
+            "title": "Credential & Server Check",
+            "instruction": "Verify the VPN server address and re-enter your credentials carefully."
+        },
+        {
+            "title": "Alternative Connection",
+            "instruction": "Try connecting via a mobile hotspot to rule out home/office ISP issues."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If still failing, raise a ticket with: Asset ID, VPN Name, Error Screenshot, Location (Home/Office), and steps tried."
+        }
+    ]
+}
