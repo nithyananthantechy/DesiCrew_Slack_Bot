@@ -632,18 +632,18 @@ app.view('submit_issue', async ({ ack, body, view, client }) => {
 
 // --- Freshservice Webhook Endpoint ---
 
-// Get the Express receiver from Bolt app
-const receiver = app.receiver;
-
-// Add body parser for webhook
+// Create separate Express server for webhooks (Socket Mode doesn't expose HTTP server)
 const express = require('express');
-receiver.app.use('/freshservice/webhook', express.json());
+const webhookApp = express();
+const webhookPort = config.webhookPort || 3000;
+
+webhookApp.use(express.json());
 
 /**
  * Webhook endpoint to receive Freshservice ticket updates
  * POST /freshservice/webhook
  */
-receiver.app.post('/freshservice/webhook', async (req, res) => {
+webhookApp.post('/freshservice/webhook', async (req, res) => {
     try {
         console.log('📨 Received Freshservice webhook:', JSON.stringify(req.body, null, 2));
 
@@ -723,7 +723,10 @@ receiver.app.post('/freshservice/webhook', async (req, res) => {
     }
 });
 
-console.log('🔗 Webhook endpoint ready at: POST /freshservice/webhook');
+// Start webhook server
+webhookApp.listen(webhookPort, () => {
+    console.log(`🔗 Webhook endpoint ready at: http://localhost:${webhookPort}/freshservice/webhook`);
+});
 
 
 // End of App Logic
