@@ -1,0 +1,39 @@
+{
+    "issue_type": "display",
+    "title": "Display Connection Issues (HDMI/Monitor)",
+    "description": "Troubleshooting laptop to TV/monitor connection problems.",
+    "keywords": [
+        "hdmi",
+        "display",
+        "monitor",
+        "tv",
+        "screen",
+        "connect",
+        "laptop",
+        "projector",
+        "external display",
+        "second screen"
+    ],
+    "steps": [
+        {
+            "title": "Check Physical Connections",
+            "instruction": "Ensure HDMI/DisplayPort cable is firmly connected to both laptop and TV/monitor. Try a different cable if available."
+        },
+        {
+            "title": "Select Correct Input Source",
+            "instruction": "On your TV/monitor, use the remote or buttons to select the correct input source (HDMI 1, HDMI 2, etc.)."
+        },
+        {
+            "title": "Detect Display",
+            "instruction": "On Windows: Press Win+P and select 'Extend' or 'Duplicate'. On Mac: Go to System Preferences → Displays → Detect Displays."
+        },
+        {
+            "title": "Update Display Drivers",
+            "instruction": "Right-click on Desktop → Display Settings → Advanced Display Settings → Display Adapter Properties → Update Driver."
+        },
+        {
+            "title": "Try Different Port",
+            "instruction": "If your laptop has multiple video outputs (HDMI, USB-C, DisplayPort), try a different port."
+        }
+    ]
+}

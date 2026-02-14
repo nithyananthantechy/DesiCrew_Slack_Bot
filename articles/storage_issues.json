@@ -1,0 +1,37 @@
+{
+    "issue_type": "storage",
+    "title": "Disk Space and Storage Issues",
+    "description": "Fix low disk space and storage problems.",
+    "keywords": [
+        "disk space",
+        "storage",
+        "full",
+        "low space",
+        "hard drive",
+        "ssd",
+        "cleanup",
+        "delete files"
+    ],
+    "steps": [
+        {
+            "title": "Check Disk Space",
+            "instruction": "Windows: This PC → Right-click C: drive → Properties. Mac: Apple menu → About This Mac → Storage."
+        },
+        {
+            "title": "Run Disk Cleanup",
+            "instruction": "Windows: Search 'Disk Cleanup' → Select C: drive → Check all boxes → OK. This removes temporary files."
+        },
+        {
+            "title": "Empty Recycle Bin/Trash",
+            "instruction": "Right-click Recycle Bin (Windows) or Trash (Mac) → Empty to permanently delete files."
+        },
+        {
+            "title": "Uninstall Unused Programs",
+            "instruction": "Windows: Settings → Apps → Apps & Features → Uninstall unused software. Mac: Drag apps to Trash from Applications folder."
+        },
+        {
+            "title": "Move Files to External Drive",
+            "instruction": "Move large files (videos, photos, old documents) to an external hard drive or cloud storage."
+        }
+    ]
+}

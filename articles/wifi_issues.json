@@ -1,0 +1,37 @@
+{
+    "issue_type": "wifi",
+    "title": "WiFi Connection Problems",
+    "description": "Troubleshooting wireless network connectivity issues.",
+    "keywords": [
+        "wifi",
+        "wireless",
+        "wi-fi",
+        "connection",
+        "internet",
+        "network",
+        "slow wifi",
+        "disconnecting"
+    ],
+    "steps": [
+        {
+            "title": "Toggle WiFi",
+            "instruction": "Turn WiFi OFF, wait 10 seconds, then turn it back ON. Try reconnecting to your network."
+        },
+        {
+            "title": "Forget and Reconnect",
+            "instruction": "In WiFi settings, select your network → Forget Network. Then reconnect by entering the password again."
+        },
+        {
+            "title": "Restart Router",
+            "instruction": "Unplug your WiFi router, wait 30 seconds, plug it back in. Wait 2 minutes for it to fully restart."
+        },
+        {
+            "title": "Check Network Adapter",
+            "instruction": "Windows: Device Manager → Network Adapters → Right-click WiFi adapter → Update Driver or Disable/Enable."
+        },
+        {
+            "title": "Move Closer to Router",
+            "instruction": "WiFi signal weakens with distance and obstacles. Try moving closer to the router to test."
+        }
+    ]
+}

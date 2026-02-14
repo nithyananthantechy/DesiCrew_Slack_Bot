@@ -36,10 +36,32 @@ if (config.ollama.baseUrl) {
 const fallbackDetectIntent = (text) => {
     const lowerText = text.toLowerCase();
 
-    // 1. Ticket Keywords
+    // 1. Quick Ticket Keywords (Domain Lock, Password Reset)
+    const isDomainLock = lowerText.includes('domain lock') || lowerText.includes('domain locked') || lowerText.includes('domainlock');
+    const isPasswordReset = lowerText.includes('password reset') || lowerText.includes('reset password') || lowerText.includes('passwordreset');
+
+    if (isDomainLock) {
+        return {
+            issue_type: "domain_lock",
+            needs_troubleshooting: false,
+            urgency: "high",
+            action: "quick_ticket"
+        };
+    }
+
+    if (isPasswordReset) {
+        return {
+            issue_type: "password_reset",
+            needs_troubleshooting: false,
+            urgency: "high",
+            action: "quick_ticket"
+        };
+    }
+
+    // 2. Ticket Keywords
     const isTicket = lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('open a case') || lowerText.includes('human') || lowerText.includes('support') || lowerText.includes('admin');
 
-    // 2. Troubleshooting Keywords (Extensive)
+    // 3. Troubleshooting Keywords (Extensive)
     const isTrouble =
         lowerText.includes('weird') || lowerText.includes('broken') || lowerText.includes('not working') ||
         lowerText.includes('issue') || lowerText.includes('problem') || lowerText.includes('error') ||
@@ -70,7 +92,7 @@ const fallbackDetectIntent = (text) => {
         };
     }
 
-    // 3. Greeting Detection
+    // 4. Greeting Detection
     if (lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('hey')) {
         return {
             issue_type: "general_question",
@@ -98,14 +120,15 @@ const detectIntent = async (userMessage) => {
 You are a concierge IT helpdesk assistant. Analyze: "${userMessage}"
 Provide JSON ONLY:
 {
-  "issue_type": "network/printer/password/software/hardware/email/vpn/biometric/freshservice/general_question",
+  "issue_type": "network/printer/password/software/hardware/email/vpn/biometric/freshservice/domain_lock/password_reset/general_question",
   "needs_troubleshooting": true/false,
   "urgency": "critical/high/medium/low",
   "suggested_article": "null or name",
   "direct_answer": "friendly response if no troubleshooting",
-  "action": "create_ticket/troubleshoot/answer/null"
+  "action": "create_ticket/troubleshoot/answer/quick_ticket/null"
 }
 Rules:
+- If user mentions "domain lock" or "password reset" specifically, action="quick_ticket" with issue_type="domain_lock" or "password_reset".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
 - If user describes a problem (even vaguely, like "it's broken") but NO ticket yet, action="troubleshoot" and needs_troubleshooting=true.
 - Be aggressive with troubleshooting for any potential technical issue.

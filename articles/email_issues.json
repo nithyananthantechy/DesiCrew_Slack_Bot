@@ -1,0 +1,38 @@
+{
+    "issue_type": "email",
+    "title": "Email Access and Sync Issues",
+    "description": "Troubleshooting Outlook, Gmail, and email client problems.",
+    "keywords": [
+        "email",
+        "outlook",
+        "gmail",
+        "mail",
+        "inbox",
+        "send",
+        "receive",
+        "sync",
+        "attachment"
+    ],
+    "steps": [
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Verify you have active internet connection. Try opening a website to confirm."
+        },
+        {
+            "title": "Verify Credentials",
+            "instruction": "Ensure your email address and password are correct. Try logging in via webmail first."
+        },
+        {
+            "title": "Check Server Settings",
+            "instruction": "For Outlook: File → Account Settings → Account Settings → Double-click your account → Verify incoming/outgoing server settings."
+        },
+        {
+            "title": "Clear Email Cache",
+            "instruction": "Close email client completely. Delete cache files. Restart the application."
+        },
+        {
+            "title": "Update Email Client",
+            "instruction": "Check for updates to your email application (Outlook, Thunderbird, etc.) and install them."
+        }
+    ]
+}

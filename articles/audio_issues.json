@@ -1,0 +1,38 @@
+{
+    "issue_type": "audio",
+    "title": "Audio and Sound Issues",
+    "description": "Fix no sound, microphone, and speaker problems.",
+    "keywords": [
+        "audio",
+        "sound",
+        "speaker",
+        "microphone",
+        "mic",
+        "headset",
+        "volume",
+        "mute",
+        "no sound"
+    ],
+    "steps": [
+        {
+            "title": "Check Volume and Mute",
+            "instruction": "Ensure volume is turned up and not muted. Check both system volume and application volume."
+        },
+        {
+            "title": "Select Correct Output Device",
+            "instruction": "Windows: Right-click speaker icon → Sound Settings → Choose correct output device. Mac: System Preferences → Sound → Output."
+        },
+        {
+            "title": "Test with Different Application",
+            "instruction": "Try playing sound in a different app (YouTube, music player) to isolate if it's app-specific."
+        },
+        {
+            "title": "Update Audio Drivers",
+            "instruction": "Windows: Device Manager → Sound, video and game controllers → Right-click audio device → Update Driver."
+        },
+        {
+            "title": "Restart Audio Service",
+            "instruction": "Windows: Services (services.msc) → Windows Audio → Restart. Or restart your computer."
+        }
+    ]
+}

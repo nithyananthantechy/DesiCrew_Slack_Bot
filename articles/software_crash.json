@@ -1,0 +1,40 @@
+{
+    "issue_type": "software",
+    "title": "Application Crashes and Freezing",
+    "description": "Fix software crashes, freezing, and performance issues.",
+    "keywords": [
+        "crash",
+        "freeze",
+        "hang",
+        "slow",
+        "not responding",
+        "application",
+        "software",
+        "program",
+        "excel",
+        "word",
+        "chrome"
+    ],
+    "steps": [
+        {
+            "title": "Force Close Application",
+            "instruction": "Windows: Ctrl+Shift+Esc → Task Manager → Select app → End Task. Mac: Cmd+Option+Esc → Force Quit."
+        },
+        {
+            "title": "Restart Application",
+            "instruction": "Close the application completely and reopen it. Check if the issue persists."
+        },
+        {
+            "title": "Check for Updates",
+            "instruction": "Open the application and check for software updates. Install any available updates."
+        },
+        {
+            "title": "Clear Application Cache",
+            "instruction": "Clear temporary files and cache for the application. Location varies by software."
+        },
+        {
+            "title": "Restart Computer",
+            "instruction": "Save all work and restart your computer to clear memory and background processes."
+        }
+    ]
+}

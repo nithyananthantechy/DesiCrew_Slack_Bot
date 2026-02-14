@@ -1,0 +1,38 @@
+{
+    "issue_type": "bluetooth",
+    "title": "Bluetooth Device Pairing Issues",
+    "description": "Fix Bluetooth headphones, mouse, keyboard connection problems.",
+    "keywords": [
+        "bluetooth",
+        "headphones",
+        "wireless",
+        "pairing",
+        "airpods",
+        "mouse",
+        "keyboard",
+        "connect",
+        "bt"
+    ],
+    "steps": [
+        {
+            "title": "Enable Bluetooth",
+            "instruction": "Ensure Bluetooth is turned ON in your system settings. Windows: Settings → Bluetooth & Devices. Mac: System Preferences → Bluetooth."
+        },
+        {
+            "title": "Put Device in Pairing Mode",
+            "instruction": "On your Bluetooth device, press and hold the pairing button (usually 3-5 seconds) until the LED blinks rapidly."
+        },
+        {
+            "title": "Remove Old Pairing",
+            "instruction": "In Bluetooth settings, find the device in the list, click 'Remove' or 'Forget', then try pairing again fresh."
+        },
+        {
+            "title": "Restart Bluetooth Service",
+            "instruction": "Turn Bluetooth OFF, wait 10 seconds, turn it back ON. Or restart your computer."
+        },
+        {
+            "title": "Check Device Battery",
+            "instruction": "Ensure your Bluetooth device is charged. Low battery can cause connection issues."
+        }
+    ]
+}

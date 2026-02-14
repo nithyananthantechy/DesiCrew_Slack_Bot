@@ -53,13 +53,56 @@ const loadArticles = async () => {
 
 /**
  * Find relevant article for a given issue type or query
- * @param {string} issueType 
+ * @param {string} issueTypeOrQuery - Issue type or user's question text
  * @returns {object|null}
  */
-const findArticle = (issueType) => {
-    // Simple matching logic for now
-    // deeper search would require vector embeddings or keyword matching
-    return articlesCache.find(a => a.issue_type === issueType) || null;
+const findArticle = (issueTypeOrQuery) => {
+    if (!issueTypeOrQuery) return null;
+
+    const query = issueTypeOrQuery.toLowerCase();
+
+    // 1. Try exact issue_type match first
+    const exactMatch = articlesCache.find(a => a.issue_type === issueTypeOrQuery);
+    if (exactMatch) {
+        console.log(`✅ Found exact match by issue_type: ${exactMatch.title}`);
+        return exactMatch;
+    }
+
+    // 2. Try keyword matching - search for articles where keywords appear in query
+    const keywordMatches = articlesCache.filter(article => {
+        if (!article.keywords || article.keywords.length === 0) return false;
+
+        // Check if any keyword appears in the user's query
+        return article.keywords.some(keyword =>
+            query.includes(keyword.toLowerCase())
+        );
+    });
+
+    if (keywordMatches.length > 0) {
+        // Return the article with most keyword matches
+        const scored = keywordMatches.map(article => {
+            const matchCount = article.keywords.filter(keyword =>
+                query.includes(keyword.toLowerCase())
+            ).length;
+            return { article, matchCount };
+        });
+
+        scored.sort((a, b) => b.matchCount - a.matchCount);
+        console.log(`✅ Found keyword match: ${scored[0].article.title} (${scored[0].matchCount} keywords matched)`);
+        return scored[0].article;
+    }
+
+    // 3. Try title matching
+    const titleMatch = articlesCache.find(a =>
+        a.title && query.includes(a.title.toLowerCase())
+    );
+    if (titleMatch) {
+        console.log(`✅ Found title match: ${titleMatch.title}`);
+        return titleMatch;
+    }
+
+    console.log(`ℹ️ No article found for: "${issueTypeOrQuery}"`);
+    return null;
 };
 
 /**

@@ -102,6 +102,18 @@ async function processMessage(text, userId, channelId, say, client, logger) {
         const state = conversationManager.getConversationState(userId);
 
         // --- 0. Handle Data Gathering States ---
+
+        // Quick Ticket Flow (Domain Lock, Password Reset) - Only needs Employee ID
+        if (state.state === 'AWAITING_EMP_ID_QUICK') {
+            const empId = text.trim();
+            logProcess(`Gathered Employee ID for quick ticket: ${empId}`);
+
+            const pendingData = { ...state.pendingTicketData, empId };
+            // Quick tickets skip hostname, go straight to finalization
+            return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
+        }
+
+        // Regular Ticket Flow
         if (state.state === 'AWAITING_EMP_ID') {
             const empId = text.trim();
             logProcess(`Gathered Employee ID: ${empId}`);
@@ -137,7 +149,30 @@ async function processMessage(text, userId, channelId, say, client, logger) {
         logProcess(`Intent detected: ${JSON.stringify(intent)}`);
 
         // 2. Handle specific actions
+        const isQuickTicket = intent.action === 'quick_ticket';
         const isTicketRequest = text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise') || intent.action === 'create_ticket';
+
+        if (isQuickTicket) {
+            // Quick ticket flow: Only ask for Employee ID (skip hostname)
+            const ticketType = intent.issue_type; // domain_lock or password_reset
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_EMP_ID_QUICK',
+                pendingTicketData: {
+                    subject: '', // Will be formatted in finalizeTicket
+                    description: `User request: ${text}`,
+                    type: ticketType,
+                    originalText: text,
+                    isQuickTicket: true
+                }
+            });
+
+            const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' : 'Password Reset';
+            await say({
+                channel: channelId,
+                text: `I'll help you raise a ${ticketTypeName} ticket. Please provide your **Employee ID**:`
+            });
+            return;
+        }
 
         if (isTicketRequest) {
             // Initiate data gathering flow instead of immediate creation
@@ -160,20 +195,30 @@ async function processMessage(text, userId, channelId, say, client, logger) {
 
         // 3. Handle troubleshooting
         if (intent.needs_troubleshooting || intent.action === 'troubleshoot' || (!intent.direct_answer && !isTicketRequest)) {
-            // Find relevant article
-            let article = knowledgeBase.findArticle(intent.issue_type);
+            let article = null;
 
-            // If AI suggested an article, try to find that one specifically
-            if (intent.suggested_article) {
+            // Step 1: Try to find article by user's actual question text (keyword matching)
+            article = knowledgeBase.findArticle(text);
+
+            // Step 2: If not found, try by issue_type from AI
+            if (!article && intent.issue_type) {
+                article = knowledgeBase.findArticle(intent.issue_type);
+            }
+
+            // Step 3: Check if AI specifically suggested an article
+            if (!article && intent.suggested_article) {
                 const specificArticle = knowledgeBase.getAllArticles().find(a =>
                     a.title.toLowerCase().includes(intent.suggested_article.toLowerCase()) ||
                     a.id.includes(intent.suggested_article)
                 );
-                if (specificArticle) article = specificArticle;
+                if (specificArticle) {
+                    article = specificArticle;
+                    console.log(`✅ Using specific article: ${specificArticle.title}`);
+                }
             }
 
+            // If no specific article found, ALWAYS generate AI-specific steps
             if (!article) {
-                // Generate dynamic steps if no article found
                 try {
                     await smartSay({
                         text: "Troubleshooting Steps",
@@ -182,7 +227,7 @@ async function processMessage(text, userId, channelId, say, client, logger) {
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": "I don't have a specific guide for that, but let me generate some troubleshooting steps for you..."
+                                    "text": "Let me generate specific troubleshooting steps for your issue..."
                                 }
                             }
                         ]
@@ -206,9 +251,10 @@ async function processMessage(text, userId, channelId, say, client, logger) {
                     if (dynamicSteps && dynamicSteps.length > 0) {
                         article = {
                             id: `dynamic_${Date.now()}`,
-                            title: `Dynamic Help: ${text.slice(0, 30)}`,
+                            title: `Help: ${text.slice(0, 50)}`,
                             steps: dynamicSteps
                         };
+                        console.log(`✅ Generated ${dynamicSteps.length} AI-specific steps for: "${text}"`);
                     }
                 } catch (err) {
                     console.error("Error generating dynamic steps:", err);
@@ -312,21 +358,36 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
             console.error("Error fetching user info:", err);
         }
 
+        // Format subject based on ticket type
+        let ticketSubject;
+        if (data.isQuickTicket) {
+            // Quick tickets: "Domain Lock - EMP123" or "Password Reset - EMP123"
+            const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' : 'Password Reset';
+            ticketSubject = `${ticketTypeName} - ${data.empId}`;
+        } else {
+            // Regular tickets: Keep existing format
+            ticketSubject = data.subject;
+        }
+
         const ticketDescription = `
 User Data:
 - Employee ID: ${data.empId}
-- System Hostname: ${data.hostname || 'N/A (Biometric Issue)'}
+- System Hostname: ${data.hostname || 'N/A (Quick Ticket or Biometric Issue)'}
 
 Original Issue:
 ${data.description}
         `.trim();
 
         const ticket = await freshservice.createTicket({
-            subject: data.subject,
+            subject: ticketSubject,
             description: ticketDescription,
             email: requesterEmail,
             name: requesterName
         });
+
+        // Store ticket-user mapping for webhook notifications
+        const ticketUserMap = require('./services/ticketUserMap');
+        ticketUserMap.storeMapping(ticket.id, userId, channelId);
 
         // Use say (public) for ticket confirmation so team knows
         await say({
@@ -543,6 +604,102 @@ app.view('submit_issue', async ({ ack, body, view, client }) => {
         });
     }
 });
+
+
+// --- Freshservice Webhook Endpoint ---
+
+// Get the Express receiver from Bolt app
+const receiver = app.receiver;
+
+// Add body parser for webhook
+const express = require('express');
+receiver.app.use('/freshservice/webhook', express.json());
+
+/**
+ * Webhook endpoint to receive Freshservice ticket updates
+ * POST /freshservice/webhook
+ */
+receiver.app.post('/freshservice/webhook', async (req, res) => {
+    try {
+        console.log('📨 Received Freshservice webhook:', JSON.stringify(req.body, null, 2));
+
+        // Extract ticket information from webhook payload
+        // Freshservice webhook structure may vary - adjust based on actual payload
+        const ticketData = req.body.ticket || req.body;
+        const ticketId = ticketData.id || ticketData.ticket_id;
+
+        if (!ticketId) {
+            console.warn('⚠️ Webhook received without ticket ID');
+            return res.status(400).json({ error: 'Missing ticket ID' });
+        }
+
+        // Get user mapping
+        const ticketUserMap = require('./services/ticketUserMap');
+        const mapping = ticketUserMap.getMapping(ticketId);
+
+        if (!mapping) {
+            console.log(`ℹ️ No user mapping found for ticket ${ticketId}`);
+            return res.status(200).json({ message: 'No mapping found, ignoring' });
+        }
+
+        // Extract update information
+        const subject = ticketData.subject || 'Your Ticket';
+        const status = ticketData.status_name || ticketData.status || 'Updated';
+        const latestNote = ticketData.latest_note || ticketData.description_text || '';
+        const updatedBy = ticketData.responder_name || ticketData.updated_by || 'Support Team';
+
+        // Determine update type
+        let updateMessage = '';
+        let emoji = '📬';
+
+        if (ticketData.status === 4 || ticketData.status === 5) {
+            // Ticket resolved or closed
+            emoji = '✅';
+            updateMessage = `*Your ticket has been ${status}!*\n\n*Ticket #${ticketId}:* ${subject}`;
+        } else if (latestNote && latestNote.trim().length > 0) {
+            // New reply/note
+            emoji = '💬';
+            updateMessage = `*New update on your ticket from ${updatedBy}:*\n\n*Ticket #${ticketId}:* ${subject}\n\n_Update:_\n${latestNote.substring(0, 500)}${latestNote.length > 500 ? '...' : ''}`;
+        } else {
+            // Status change
+            emoji = '🔄';
+            updateMessage = `*Ticket status updated to: ${status}*\n\n*Ticket #${ticketId}:* ${subject}`;
+        }
+
+        // Send notification to user
+        await app.client.chat.postMessage({
+            channel: mapping.userId,
+            text: `${emoji} Ticket Update`,
+            blocks: [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": updateMessage
+                    }
+                },
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "mrkdwn",
+                            "text": `Updated: ${new Date().toLocaleString()}`
+                        }
+                    ]
+                }
+            ]
+        });
+
+        console.log(`✅ Notified user ${mapping.userId} about ticket ${ticketId} update`);
+        res.status(200).json({ message: 'Notification sent' });
+
+    } catch (error) {
+        console.error('❌ Error processing webhook:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+console.log('🔗 Webhook endpoint ready at: POST /freshservice/webhook');
 
 
 // End of App Logic
