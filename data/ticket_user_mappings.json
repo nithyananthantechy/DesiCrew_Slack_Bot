@@ -1,0 +1,31 @@
+{
+  "TEST-001": {
+    "userId": "U12345",
+    "channelId": "D12345",
+    "ticketType": "domain_lock",
+    "isSensitive": true,
+    "createdAt": "2026-02-14T15:28:50.200Z"
+  }
+}
+ "TEST-002": {
+    "userId": "U67890",
+    "channelId": "D67890",
+    "ticketType": "password_reset",
+    "isSensitive": true,
+    "createdAt": "2026-02-14T15:28:50.207Z"
+  },
+  "TEST-003": {
+    "userId": "UABCDE",
+    "channelId": "DABCDE",
+    "ticketType": "general",
+    "isSensitive": false,
+    "createdAt": "2026-02-14T15:28:50.208Z"
+  },
+  "TEST-004": {
+    "userId": "UFGHIJ",
+    "channelId": "DFGHIJ",
+    "ticketType": "vpn_issue",
+    "isSensitive": false,
+    "createdAt": "2026-02-14T15:28:50.208Z"
+  }
+}

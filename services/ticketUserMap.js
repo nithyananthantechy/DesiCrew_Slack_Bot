@@ -48,11 +48,18 @@ const saveMappings = async () => {
  * @param {string|number} ticketId - Freshservice ticket ID
  * @param {string} userId - Slack user ID
  * @param {string} channelId - Slack channel ID (for DM)
+ * @param {string} ticketType - Type of ticket (domain_lock, password_reset, general, etc.)
  */
-const storeMapping = (ticketId, userId, channelId) => {
+const storeMapping = (ticketId, userId, channelId, ticketType = 'general') => {
+    // Determine if this is a sensitive ticket
+    const sensitiveTypes = ['domain_lock', 'password_reset'];
+    const isSensitive = sensitiveTypes.includes(ticketType);
+
     const mapping = {
         userId,
         channelId,
+        ticketType,
+        isSensitive,
         createdAt: new Date().toISOString()
     };
     ticketCache.set(String(ticketId), mapping);
@@ -60,7 +67,7 @@ const storeMapping = (ticketId, userId, channelId) => {
     // Save to file asynchronously (don't wait)
     saveMappings().catch(err => console.error("Failed to save mappings:", err));
 
-    console.log(`📌 Stored mapping: Ticket ${ticketId} -> User ${userId}`);
+    console.log(`📌 Stored mapping: Ticket ${ticketId} -> User ${userId} (Type: ${ticketType}, Sensitive: ${isSensitive})`);
 };
 
 /**

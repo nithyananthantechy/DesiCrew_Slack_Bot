@@ -406,7 +406,7 @@ ${data.description}
 
         // Store ticket-user mapping for webhook notifications
         const ticketUserMap = require('./services/ticketUserMap');
-        ticketUserMap.storeMapping(ticket.id, userId, channelId);
+        ticketUserMap.storeMapping(ticket.id, userId, channelId, data.type || 'general');
 
         // Use say (public) for ticket confirmation so team knows
         await say({
@@ -638,6 +638,10 @@ webhookApp.use(express.json());
  * Webhook endpoint to receive Freshservice ticket updates
  * POST /freshservice/webhook
  */
+/**
+ * Webhook endpoint to receive Freshservice ticket updates
+ * POST /freshservice/webhook
+ */
 webhookApp.post('/freshservice/webhook', async (req, res) => {
     try {
         console.log('📨 Received Freshservice webhook:', JSON.stringify(req.body, null, 2));
@@ -667,50 +671,133 @@ webhookApp.post('/freshservice/webhook', async (req, res) => {
         const latestNote = ticketData.latest_note || ticketData.description_text || '';
         const updatedBy = ticketData.responder_name || ticketData.updated_by || 'Support Team';
 
-        // Determine update type
-        let updateMessage = '';
-        let emoji = '📬';
+        // Check if this is a sensitive ticket (domain lock or password reset)
+        const isSensitiveTicket = mapping.isSensitive;
+        const ticketType = mapping.ticketType;
 
-        if (ticketData.status === 4 || ticketData.status === 5) {
-            // Ticket resolved or closed
-            emoji = '✅';
-            updateMessage = `*Your ticket has been ${status}!*\n\n*Ticket #${ticketId}:* ${subject}`;
-        } else if (latestNote && latestNote.trim().length > 0) {
-            // New reply/note
-            emoji = '💬';
-            updateMessage = `*New update on your ticket from ${updatedBy}:*\n\n*Ticket #${ticketId}:* ${subject}\n\n_Update:_\n${latestNote.substring(0, 500)}${latestNote.length > 500 ? '...' : ''}`;
-        } else {
-            // Status change
-            emoji = '🔄';
-            updateMessage = `*Ticket status updated to: ${status}*\n\n*Ticket #${ticketId}:* ${subject}`;
-        }
+        console.log(`🔍 Ticket ${ticketId} - Type: ${ticketType}, Sensitive: ${isSensitiveTicket}`);
 
-        // Send notification to user
-        await app.client.chat.postMessage({
-            channel: mapping.userId,
-            text: `${emoji} Ticket Update`,
-            blocks: [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": updateMessage
-                    }
-                },
-                {
-                    "type": "context",
-                    "elements": [
-                        {
+        if (isSensitiveTicket) {
+            // ========== SENSITIVE TICKET HANDLING ==========
+            // For domain lock and password reset, send PRIVATE DM ONLY
+            console.log(`🔐 Processing sensitive ticket ${ticketId} of type ${ticketType}`);
+
+            // Fetch the latest reply from Freshservice to show user the automation response
+            const latestReply = await freshservice.getLatestTicketReply(ticketId);
+
+            if (!latestReply) {
+                console.log(`⚠️ No reply found for sensitive ticket ${ticketId}, skipping notification`);
+                return res.status(200).json({ message: 'No reply to send' });
+            }
+
+            // Determine the ticket type name for display
+            const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' :
+                ticketType === 'password_reset' ? 'Password Reset' :
+                    'Security';
+
+            // Create secure private message
+            const secureMessage = {
+                channel: mapping.userId, // Send directly to user's DM
+                text: `🔐 ${ticketTypeName} Request Update`,
+                blocks: [
+                    {
+                        "type": "section",
+                        "text": {
                             "type": "mrkdwn",
-                            "text": `Updated: ${new Date().toLocaleString()}`
+                            "text": `*🔐 ${ticketTypeName} Request Processed*\n\nYour request has been handled by our automated system.`
                         }
-                    ]
-                }
-            ]
-        });
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `*Ticket #${ticketId}*\n${subject}\n\n*Status:* ${status}`
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `*📝 Response from IT Support:*\n\`\`\`\n${latestReply}\n\`\`\``
+                        }
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": `🔒 _This is a private, secure message. Only you can see this information._`
+                            }
+                        ]
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": `Updated: ${new Date().toLocaleString()}`
+                            }
+                        ]
+                    }
+                ]
+            };
 
-        console.log(`✅ Notified user ${mapping.userId} about ticket ${ticketId} update`);
-        res.status(200).json({ message: 'Notification sent' });
+            // Send PRIVATE DM (never to channel, never ephemeral)
+            await app.client.chat.postMessage(secureMessage);
+
+            console.log(`✅ Sent PRIVATE notification to user ${mapping.userId} for sensitive ticket ${ticketId}`);
+            res.status(200).json({ message: 'Secure notification sent' });
+
+        } else {
+            // ========== GENERAL TICKET HANDLING ==========
+            // Existing behavior for non-sensitive tickets
+            let updateMessage = '';
+            let emoji = '📬';
+
+            if (ticketData.status === 4 || ticketData.status === 5) {
+                // Ticket resolved or closed
+                emoji = '✅';
+                updateMessage = `*Your ticket has been ${status}!*\n\n*Ticket #${ticketId}:* ${subject}`;
+            } else if (latestNote && latestNote.trim().length > 0) {
+                // New reply/note
+                emoji = '💬';
+                updateMessage = `*New update on your ticket from ${updatedBy}:*\n\n*Ticket #${ticketId}:* ${subject}\n\n_Update:_\n${latestNote.substring(0, 500)}${latestNote.length > 500 ? '...' : ''}`;
+            } else {
+                // Status change
+                emoji = '🔄';
+                updateMessage = `*Ticket status updated to: ${status}*\n\n*Ticket #${ticketId}:* ${subject}`;
+            }
+
+            // Send notification to user
+            await app.client.chat.postMessage({
+                channel: mapping.userId,
+                text: `${emoji} Ticket Update`,
+                blocks: [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": updateMessage
+                        }
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": `Updated: ${new Date().toLocaleString()}`
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            console.log(`✅ Notified user ${mapping.userId} about ticket ${ticketId} update`);
+            res.status(200).json({ message: 'Notification sent' });
+        }
 
     } catch (error) {
         console.error('❌ Error processing webhook:', error);
