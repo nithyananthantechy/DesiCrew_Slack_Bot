@@ -1,0 +1,35 @@
+{
+    "issue_type": "screen_sharing",
+    "title": "Screen Sharing Not Working",
+    "description": "Fix screen sharing issues in video conferencing apps like Teams, Zoom, Google Meet.",
+    "keywords": [
+        "screen share",
+        "screen sharing",
+        "cant share screen",
+        "share screen not working",
+        "screen share black",
+        "presentation mode"
+    ],
+    "steps": [
+        {
+            "title": "Grant Screen Recording Permission",
+            "instruction": "Mac: System Preferences → Security & Privacy → Privacy → Screen Recording → Enable for your app (Teams/Zoom). Windows: Usually no permission needed."
+        },
+        {
+            "title": "Close Other Screen Capture Apps",
+            "instruction": "Close other apps that might be using screen capture (OBS, recording software, screenshot tools). Only one app can capture screen at a time."
+        },
+        {
+            "title": "Restart the App",
+            "instruction": "Completely close and reopen the video conferencing app. End the meeting and rejoin if needed."
+        },
+        {
+            "title": "Update Graphics Drivers",
+            "instruction": "Device Manager → Display adapters → Right-click graphics card → Update driver. Outdated drivers can cause black screen during sharing."
+        },
+        {
+            "title": "Try Different Screen Share Mode",
+            "instruction": "Instead of sharing entire screen, try sharing specific window or application. Or vice versa."
+        }
+    ]
+}

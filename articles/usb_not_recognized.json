@@ -1,0 +1,37 @@
+{
+    "issue_type": "usb",
+    "title": "USB Device Not Recognized",
+    "description": "Fix USB devices not being detected or recognized by computer.",
+    "keywords": [
+        "usb",
+        "usb not working",
+        "device not recognized",
+        "usb port",
+        "flash drive",
+        "external drive",
+        "usb device",
+        "not detected"
+    ],
+    "steps": [
+        {
+            "title": "Try Different USB Port",
+            "instruction": "Unplug the device and try a different USB port on your computer. Try both front and back ports if using a desktop."
+        },
+        {
+            "title": "Restart Computer with Device Connected",
+            "instruction": "Leave the USB device plugged in and restart your computer. Sometimes the device is detected during boot."
+        },
+        {
+            "title": "Check Device Manager",
+            "instruction": "Open Device Manager → Look for devices with yellow exclamation marks → Right-click → Uninstall device → Unplug and replug USB device."
+        },
+        {
+            "title": "Update USB Controllers",
+            "instruction": "Device Manager → Universal Serial Bus controllers → Right-click each USB controller → Update driver."
+        },
+        {
+            "title": "Test Device on Another Computer",
+            "instruction": "Try the USB device on a different computer to check if the issue is with the device or your computer's USB ports."
+        }
+    ]
+}

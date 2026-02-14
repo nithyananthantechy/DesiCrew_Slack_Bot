@@ -1,0 +1,38 @@
+{
+    "issue_type": "browser",
+    "title": "Browser Issues (Chrome/Edge/Firefox)",
+    "description": "Fix browser problems including slow loading, crashes, and website issues.",
+    "keywords": [
+        "browser",
+        "chrome",
+        "edge",
+        "firefox",
+        "browser slow",
+        "browser crash",
+        "website not loading",
+        "browser not working",
+        "page not loading"
+    ],
+    "steps": [
+        {
+            "title": "Clear Browser Cache and Cookies",
+            "instruction": "Chrome/Edge: Press Ctrl+Shift+Delete → Select 'All time' → Check 'Cookies' and 'Cached images' → Clear data. This fixes most loading issues."
+        },
+        {
+            "title": "Disable Extensions",
+            "instruction": "Chrome: Three dots → Extensions → Manage Extensions → Toggle off extensions one by one to find problematic ones."
+        },
+        {
+            "title": "Update Browser",
+            "instruction": "Chrome/Edge: Three dots → Help → About → Browser will auto-update. Restart browser after update."
+        },
+        {
+            "title": "Reset Browser Settings",
+            "instruction": "Chrome/Edge: Settings → Reset settings → Restore settings to original defaults. This removes custom settings but keeps bookmarks."
+        },
+        {
+            "title": "Try Incognito/Private Mode",
+            "instruction": "Press Ctrl+Shift+N (Chrome/Edge) or Ctrl+Shift+P (Firefox). If site works in incognito, the issue is likely an extension or cache."
+        }
+    ]
+}

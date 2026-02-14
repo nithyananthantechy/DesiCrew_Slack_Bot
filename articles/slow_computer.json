@@ -1,0 +1,37 @@
+{
+    "issue_type": "performance",
+    "title": "Slow Computer Performance",
+    "description": "Speed up a slow laptop or desktop computer.",
+    "keywords": [
+        "slow computer",
+        "laptop slow",
+        "pc slow",
+        "computer freezing",
+        "sluggish",
+        "lag",
+        "slow performance",
+        "computer running slow"
+    ],
+    "steps": [
+        {
+            "title": "Restart Your Computer",
+            "instruction": "Save your work and restart your computer. This clears memory and stops unnecessary background processes."
+        },
+        {
+            "title": "Check Task Manager for Resource Usage",
+            "instruction": "Press Ctrl+Shift+Esc to open Task Manager. Check CPU, Memory, and Disk usage. Close applications using excessive resources."
+        },
+        {
+            "title": "Disable Startup Programs",
+            "instruction": "Task Manager → Startup tab → Right-click unnecessary programs → Disable. This prevents them from slowing down boot time."
+        },
+        {
+            "title": "Run Disk Cleanup",
+            "instruction": "Search for 'Disk Cleanup', select C: drive, check all boxes including 'System files', and click OK to free up space."
+        },
+        {
+            "title": "Check for Malware",
+            "instruction": "Run Windows Security (Windows Defender) full scan: Settings → Update & Security → Windows Security → Virus & threat protection → Quick scan."
+        }
+    ]
+}

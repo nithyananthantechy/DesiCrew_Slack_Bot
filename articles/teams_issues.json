@@ -1,0 +1,39 @@
+{
+    "issue_type": "teams",
+    "title": "Microsoft Teams Issues",
+    "description": "Troubleshooting Microsoft Teams problems including connectivity, audio/video, and screen sharing.",
+    "keywords": [
+        "teams",
+        "microsoft teams",
+        "teams not working",
+        "teams call",
+        "teams meeting",
+        "teams audio",
+        "teams video",
+        "teams screen share",
+        "teams notification",
+        "teams login"
+    ],
+    "steps": [
+        {
+            "title": "Restart Teams",
+            "instruction": "Close Teams completely (right-click Teams icon in system tray → Quit), then reopen it. This fixes most temporary glitches."
+        },
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Ensure you have a stable internet connection. Run a speed test - Teams requires at least 1.5 Mbps for video calls."
+        },
+        {
+            "title": "Clear Teams Cache",
+            "instruction": "Windows: Close Teams, press Win+R, type %appdata%\\Microsoft\\Teams, delete the Cache folder. Mac: ~/Library/Application Support/Microsoft/Teams → delete Cache. Restart Teams."
+        },
+        {
+            "title": "Check Audio/Video Settings",
+            "instruction": "In Teams: Settings → Devices → Test your camera, microphone, and speakers. Make sure the correct devices are selected."
+        },
+        {
+            "title": "Update Teams",
+            "instruction": "Click your profile picture → Check for updates. Or download the latest version from Microsoft's website."
+        }
+    ]
+}

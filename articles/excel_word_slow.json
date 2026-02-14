@@ -1,0 +1,36 @@
+{
+    "issue_type": "excel_word",
+    "title": "Excel/Word Slow Performance",
+    "description": "Fix Microsoft Excel and Word running slowly or freezing.",
+    "keywords": [
+        "excel slow",
+        "word slow",
+        "excel freezing",
+        "word freezing",
+        "office slow",
+        "excel not responding",
+        "word not responding"
+    ],
+    "steps": [
+        {
+            "title": "Disable Add-ins",
+            "instruction": "File → Options → Add-ins → Manage: COM Add-ins → Go → Uncheck all add-ins → OK → Restart application. Add-ins often cause slowness."
+        },
+        {
+            "title": "Repair Office Installation",
+            "instruction": "Control Panel → Programs → Programs and Features → Microsoft Office → Change → Quick Repair (or Online Repair) → Repair."
+        },
+        {
+            "title": "Disable Hardware Graphics Acceleration",
+            "instruction": "File → Options → Advanced → Display section → Check 'Disable hardware graphics acceleration' → OK → Restart application."
+        },
+        {
+            "title": "Reduce File Size",
+            "instruction": "For large files: Remove unnecessary images, compress images (Pictures → Format → Compress Pictures), delete unused sheets/slides."
+        },
+        {
+            "title": "Update Microsoft Office",
+            "instruction": "Open any Office app → File → Account → Update Options → Update Now. Keep Office updated for best performance."
+        }
+    ]
+}

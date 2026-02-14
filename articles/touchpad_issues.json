@@ -1,0 +1,36 @@
+{
+    "issue_type": "touchpad",
+    "title": "Touchpad Not Working",
+    "description": "Fix laptop touchpad not responding or cursor not moving.",
+    "keywords": [
+        "touchpad",
+        "trackpad",
+        "touchpad not working",
+        "touchpad disabled",
+        "cursor not moving",
+        "touchpad cursor",
+        "laptop touchpad"
+    ],
+    "steps": [
+        {
+            "title": "Check if Touchpad is Enabled",
+            "instruction": "Try pressing the touchpad toggle key (usually Fn + F5, F6, F7, or F9 depending on laptop model). Look for touchpad icon on function keys."
+        },
+        {
+            "title": "Enable in Windows Settings",
+            "instruction": "Settings → Devices → Touchpad → Make sure touchpad toggle is ON. Check 'Leave touchpad on when mouse is connected' if needed."
+        },
+        {
+            "title": "Update Touchpad Driver",
+            "instruction": "Device Manager → Mice and other pointing devices → Right-click touchpad → Update driver → Search automatically for drivers."
+        },
+        {
+            "title": "Uninstall and Reinstall Driver",
+            "instruction": "Device Manager → Right-click touchpad → Uninstall device → Check 'Delete driver' → Restart computer (driver will auto-reinstall)."
+        },
+        {
+            "title": "Check for Physical Damage",
+            "instruction": "Ensure touchpad surface is clean and dry. Check if touchpad is physically damaged or if palm rejection is too sensitive."
+        }
+    ]
+}

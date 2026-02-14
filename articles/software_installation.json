@@ -1,0 +1,36 @@
+{
+    "issue_type": "software_install",
+    "title": "Software Installation Issues",
+    "description": "Fix problems installing or uninstalling software programs.",
+    "keywords": [
+        "cannot install",
+        "installation failed",
+        "software install",
+        "installation error",
+        "cannot uninstall",
+        "install blocked",
+        "installer not working"
+    ],
+    "steps": [
+        {
+            "title": "Run Installer as Administrator",
+            "instruction": "Right-click the installer file → Select 'Run as administrator'. This resolves most permission-related installation errors."
+        },
+        {
+            "title": "Disable Antivirus Temporarily",
+            "instruction": "Temporarily disable your antivirus software during installation. Some security software blocks installers. Re-enable after installation."
+        },
+        {
+            "title": "Check System Requirements",
+            "instruction": "Verify your computer meets minimum requirements (RAM, disk space, OS version) for the software you're installing."
+        },
+        {
+            "title": "Clean Up Temp Files",
+            "instruction": "Press Win+R → type %temp% → Delete all files in the folder. Then run Disk Cleanup to free space for installation."
+        },
+        {
+            "title": "Use Windows Troubleshooter",
+            "instruction": "Settings → Update & Security → Troubleshoot → Additional troubleshooters → Program Compatibility Troubleshooter → Run."
+        }
+    ]
+}

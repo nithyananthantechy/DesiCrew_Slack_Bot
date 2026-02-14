@@ -1,0 +1,36 @@
+{
+    "issue_type": "bluescreen",
+    "title": "Blue Screen of Death (BSOD)",
+    "description": "Troubleshoot Windows blue screen errors and system crashes.",
+    "keywords": [
+        "blue screen",
+        "bsod",
+        "blue screen of death",
+        "system crash",
+        "critical error",
+        "stop error",
+        "windows crash"
+    ],
+    "steps": [
+        {
+            "title": "Note the Error Code",
+            "instruction": "Write down the STOP code (e.g., 'CRITICAL_PROCESS_DIED', '0x0000007B') shown on blue screen. This helps identify the cause."
+        },
+        {
+            "title": "Boot into Safe Mode",
+            "instruction": "Restart → Press F8 repeatedly → Select 'Safe Mode'. If Windows boots successfully in Safe Mode, the issue is likely a driver or software."
+        },
+        {
+            "title": "Update or Rollback Drivers",
+            "instruction": "Device Manager → Look for recently updated drivers → Right-click → Properties → Driver tab → Roll Back Driver (if available) or Update Driver."
+        },
+        {
+            "title": "Run System File Checker",
+            "instruction": "Open Command Prompt as administrator → Type 'sfc /scannow' → Press Enter. This scans and repairs corrupted system files."
+        },
+        {
+            "title": "Check for Windows Updates",
+            "instruction": "Settings → Update & Security → Windows Update → Check for updates. Install all critical and recommended updates."
+        }
+    ]
+}

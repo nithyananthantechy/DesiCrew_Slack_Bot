@@ -1,0 +1,36 @@
+{
+    "issue_type": "battery",
+    "title": "Laptop Not Charging",
+    "description": "Fix laptop battery not charging or power adapter issues.",
+    "keywords": [
+        "laptop not charging",
+        "battery",
+        "charger",
+        "power adapter",
+        "plugged in not charging",
+        "battery not charging",
+        "charging issue"
+    ],
+    "steps": [
+        {
+            "title": "Check Power Connections",
+            "instruction": "Ensure power adapter is firmly plugged into both the wall outlet and laptop. Check for any loose connections or damaged cables."
+        },
+        {
+            "title": "Try Different Power Outlet",
+            "instruction": "Plug the charger into a different wall outlet to rule out electrical socket issues. Avoid using power strips if possible."
+        },
+        {
+            "title": "Inspect Charging Port",
+            "instruction": "Check laptop's charging port for any debris, dust, or damage. Clean gently with compressed air if needed."
+        },
+        {
+            "title": "Remove and Reseat Battery (if removable)",
+            "instruction": "Shut down laptop, remove battery, press power button for 15 seconds, reinsert battery, and try charging again."
+        },
+        {
+            "title": "Update Battery Driver",
+            "instruction": "Device Manager → Batteries → Microsoft ACPI-Compliant Control Method Battery → Right-click → Uninstall → Restart computer (driver will reinstall)."
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "issue_type": "zoom",
+    "title": "Zoom Issues",
+    "description": "Fix Zoom meeting problems including audio, video, and connection issues.",
+    "keywords": [
+        "zoom",
+        "zoom meeting",
+        "zoom call",
+        "zoom audio",
+        "zoom video",
+        "zoom camera",
+        "zoom not working",
+        "zoom screen share",
+        "zoom connection"
+    ],
+    "steps": [
+        {
+            "title": "Test Audio/Video Before Meeting",
+            "instruction": "Click Settings → Audio/Video → Test Speaker/Microphone and Test Video. Ensure correct devices are selected."
+        },
+        {
+            "title": "Check Camera/Microphone Permissions",
+            "instruction": "Windows: Settings → Privacy → Camera/Microphone → Allow Zoom. Mac: System Preferences → Security & Privacy → Camera/Microphone → Enable Zoom."
+        },
+        {
+            "title": "Restart Zoom",
+            "instruction": "Close Zoom completely, then reopen. For persistent issues, uninstall and reinstall the latest version of Zoom."
+        },
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Ensure stable internet connection. For better quality, use wired Ethernet instead of Wi-Fi if possible."
+        },
+        {
+            "title": "Update Zoom Client",
+            "instruction": "Click your profile picture → Check for Updates. Keep Zoom updated to the latest version for best performance."
+        }
+    ]
+}

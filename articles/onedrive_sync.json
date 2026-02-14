@@ -1,0 +1,36 @@
+{
+    "issue_type": "onedrive",
+    "title": "OneDrive Sync Issues",
+    "description": "Fix OneDrive synchronization and file upload/download problems.",
+    "keywords": [
+        "onedrive",
+        "onedrive sync",
+        "onedrive not syncing",
+        "file not uploading",
+        "cloud storage",
+        "onedrive error",
+        "sync pending"
+    ],
+    "steps": [
+        {
+            "title": "Check Sync Status",
+            "instruction": "Click the OneDrive cloud icon in system tray to see sync status. Look for any error messages or pending syncs."
+        },
+        {
+            "title": "Pause and Resume Sync",
+            "instruction": "Right-click OneDrive icon → Pause syncing → Wait 10 seconds → Resume syncing. This often resolves temporary sync issues."
+        },
+        {
+            "title": "Check File Name and Path Length",
+            "instruction": "File names with special characters (: * ? < > |) or paths longer than 260 characters cannot sync. Rename or move the file to a shorter path."
+        },
+        {
+            "title": "Reset OneDrive",
+            "instruction": "Press Win+R, type: %localappdata%\\Microsoft\\OneDrive\\onedrive.exe /reset and press Enter. Wait 2 minutes, then restart OneDrive manually."
+        },
+        {
+            "title": "Check Storage Space",
+            "instruction": "Ensure you have enough space in your OneDrive account and on your local hard drive. Check both in OneDrive settings."
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "issue_type": "outlook",
+    "title": "Outlook Email Issues",
+    "description": "Troubleshoot Outlook email problems including sending/receiving, sync, and performance issues.",
+    "keywords": [
+        "outlook",
+        "email",
+        "outlook not working",
+        "email not sending",
+        "email not receiving",
+        "outlook sync",
+        "outlook slow",
+        "outlook crash",
+        "cannot send email"
+    ],
+    "steps": [
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Ensure you're connected to the internet. Check the connection status in Outlook's bottom status bar."
+        },
+        {
+            "title": "Send/Receive All Folders",
+            "instruction": "Click Send/Receive tab → Send/Receive All Folders (or press F9) to manually sync your mailbox."
+        },
+        {
+            "title": "Work Offline Mode Check",
+            "instruction": "Go to Send/Receive tab → make sure 'Work Offline' is NOT enabled. If it's enabled, click it to disable."
+        },
+        {
+            "title": "Repair Outlook Data File",
+            "instruction": "Close Outlook. Run Inbox Repair Tool (scanpst.exe) from C:\\Program Files\\Microsoft Office\\root\\Office16. Select your .pst/.ost file and click Repair."
+        },
+        {
+            "title": "Restart Outlook in Safe Mode",
+            "instruction": "Close Outlook. Hold Ctrl key while opening Outlook, or run 'outlook.exe /safe' to start in Safe Mode and disable add-ins that may cause issues."
+        }
+    ]
+}

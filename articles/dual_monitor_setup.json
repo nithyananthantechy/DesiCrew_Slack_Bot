@@ -1,0 +1,36 @@
+{
+    "issue_type": "dual_monitor",
+    "title": "Dual Monitor Setup Issues",
+    "description": "Fix problems with setting up or using multiple monitors.",
+    "keywords": [
+        "dual monitor",
+        "multiple monitors",
+        "second monitor",
+        "extend display",
+        "two monitors",
+        "monitor not detected",
+        "dual screen"
+    ],
+    "steps": [
+        {
+            "title": "Detect Displays",
+            "instruction": "Windows: Right-click desktop → Display settings → Scroll down → Click 'Detect' to find connected monitors."
+        },
+        {
+            "title": "Check Physical Connections",
+            "instruction": "Ensure both monitors are powered on and cables (HDMI/DisplayPort/VGA) are firmly connected to both computer and monitors."
+        },
+        {
+            "title": "Configure Display Mode",
+            "instruction": "Press Win+P to open Project menu → Choose 'Extend' to use both monitors independently, or 'Duplicate' to mirror displays."
+        },
+        {
+            "title": "Arrange Monitor Position",
+            "instruction": "Display settings → Identify monitors → Drag monitor icons to match physical arrangement (left/right) → Apply."
+        },
+        {
+            "title": "Update Graphics Driver",
+            "instruction": "Device Manager → Display adapters → Right-click graphics card → Update driver. Download latest drivers from manufacturer's website."
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "issue_type": "overheating",
+    "title": "Laptop Overheating",
+    "description": "Fix laptop overheating, loud fan noise, and thermal issues.",
+    "keywords": [
+        "laptop hot",
+        "overheating",
+        "laptop heating",
+        "fan loud",
+        "fan noise",
+        "thermal",
+        "laptop warm",
+        "cpu hot"
+    ],
+    "steps": [
+        {
+            "title": "Use on Hard, Flat Surface",
+            "instruction": "Place laptop on a hard, flat surface (not bed, pillow, or lap). Ensure ventilation slots on bottom and sides are not blocked."
+        },
+        {
+            "title": "Clean Air Vents and Fans",
+            "instruction": "Shut down laptop. Use compressed air to blow dust out of air vents. Hold can upright and use short bursts. Clean regularly."
+        },
+        {
+            "title": "Close Resource-Intensive Programs",
+            "instruction": "Open Task Manager (Ctrl+Shift+Esc) → Check CPU usage → Close programs using high CPU/memory resources."
+        },
+        {
+            "title": "Adjust Power Settings",
+            "instruction": "Settings → System → Power & sleep → Additional power settings → Choose 'Balanced' or 'Power saver' mode to reduce heat."
+        },
+        {
+            "title": "Use Laptop Cooling Pad",
+            "instruction": "Consider using an external cooling pad with fans. This helps with airflow and keeps laptop cooler during heavy use."
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "issue_type": "file_access",
+    "title": "File Access Denied Errors",
+    "description": "Fix permission errors when trying to access, edit, or delete files and folders.",
+    "keywords": [
+        "access denied",
+        "permission denied",
+        "cannot access file",
+        "cannot delete file",
+        "file permission",
+        "administrator permission",
+        "access is denied"
+    ],
+    "steps": [
+        {
+            "title": "Run as Administrator",
+            "instruction": "Right-click the program or file → Select 'Run as administrator'. This gives elevated permissions to access the file."
+        },
+        {
+            "title": "Take Ownership of File",
+            "instruction": "Right-click file/folder → Properties → Security tab → Advanced → Change owner to your username → Check 'Replace owner on subcontainers' → OK."
+        },
+        {
+            "title": "Check File Permissions",
+            "instruction": "Right-click file → Properties → Security → Select your username → Click 'Edit' → Check 'Full control' → Apply → OK."
+        },
+        {
+            "title": "Disable Read-Only Attribute",
+            "instruction": "Right-click file → Properties → General tab → Uncheck 'Read-only' → Apply → OK."
+        },
+        {
+            "title": "Check if File is Open in Another Program",
+            "instruction": "Close all programs that might be using the file. Restart computer if necessary to release file locks."
+        }
+    ]
+}

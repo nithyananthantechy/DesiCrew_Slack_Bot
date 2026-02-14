@@ -1,0 +1,37 @@
+{
+    "issue_type": "mouse",
+    "title": "Mouse Issues",
+    "description": "Fix mouse not working, cursor freezing, or connectivity problems.",
+    "keywords": [
+        "mouse",
+        "mouse not working",
+        "cursor",
+        "cursor freezing",
+        "mouse lag",
+        "wireless mouse",
+        "mouse cursor",
+        "trackball"
+    ],
+    "steps": [
+        {
+            "title": "Check Physical Connection",
+            "instruction": "For wired mouse: unplug and replug the USB cable. For wireless: check batteries and ensure USB receiver is plugged in securely."
+        },
+        {
+            "title": "Try Different USB Port",
+            "instruction": "Plug the mouse into a different USB port. Try a USB 2.0 port if USB 3.0 isn't working, or vice versa."
+        },
+        {
+            "title": "Clean the Mouse Sensor",
+            "instruction": "Turn off mouse, clean the optical sensor on the bottom with a soft cloth. Remove any dust or debris."
+        },
+        {
+            "title": "Update Mouse Driver",
+            "instruction": "Device Manager → Mice and other pointing devices → Right-click your mouse → Update driver → Search automatically."
+        },
+        {
+            "title": "Test on Different Surface",
+            "instruction": "Try using the mouse on a mouse pad or different surface. Some optical mice don't work well on glass or reflective surfaces."
+        }
+    ]
+}
