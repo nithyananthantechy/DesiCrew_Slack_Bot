@@ -197,99 +197,123 @@ async function processMessage(text, userId, channelId, say, client, logger) {
         if (intent.needs_troubleshooting || intent.action === 'troubleshoot' || (!intent.direct_answer && !isTicketRequest)) {
             let article = null;
 
-            // Step 1: Try to find article by user's actual question text (keyword matching)
-            article = knowledgeBase.findArticle(text);
+            try {
+                // Step 1: Try to find article by user's actual question text (keyword matching)
+                console.log(`🔍 Step 1: Searching by user text: "${text}"`);
+                article = knowledgeBase.findArticle(text);
 
-            // Step 2: If not found, try by issue_type from AI
-            if (!article && intent.issue_type) {
-                article = knowledgeBase.findArticle(intent.issue_type);
-            }
-
-            // Step 3: Check if AI specifically suggested an article
-            if (!article && intent.suggested_article) {
-                const specificArticle = knowledgeBase.getAllArticles().find(a =>
-                    a.title.toLowerCase().includes(intent.suggested_article.toLowerCase()) ||
-                    a.id.includes(intent.suggested_article)
-                );
-                if (specificArticle) {
-                    article = specificArticle;
-                    console.log(`✅ Using specific article: ${specificArticle.title}`);
+                // Step 2: If not found, try by issue_type from AI
+                if (!article && intent.issue_type) {
+                    console.log(`🔍 Step 2: Searching by issue_type: "${intent.issue_type}"`);
+                    article = knowledgeBase.findArticle(intent.issue_type);
                 }
-            }
 
-            // If no specific article found, ALWAYS generate AI-specific steps
-            if (!article) {
-                try {
-                    await smartSay({
-                        text: "Troubleshooting Steps",
-                        blocks: [
-                            {
-                                "type": "section",
-                                "text": {
-                                    "type": "mrkdwn",
-                                    "text": "Let me generate specific troubleshooting steps for your issue..."
-                                }
-                            }
-                        ]
+                // Step 3: Check if AI specifically suggested an article
+                if (!article && intent.suggested_article) {
+                    console.log(`🔍 Step 3: Searching by suggested article: "${intent.suggested_article}"`);
+                    const specificArticle = knowledgeBase.getAllArticles().find(a =>
+                        a.title.toLowerCase().includes(intent.suggested_article.toLowerCase()) ||
+                        a.id.includes(intent.suggested_article)
+                    );
+                    if (specificArticle) {
+                        article = specificArticle;
+                        console.log(`✅ Using specific article: ${specificArticle.title}`);
+                    }
+                }
+
+                // If article found, use it
+                if (article && article.steps && article.steps.length > 0) {
+                    console.log(`✅ Found article: ${article.title} with ${article.steps.length} steps`);
+                    conversationManager.updateConversationState(userId, {
+                        step: 1,
+                        currentArticle: article,
+                        ticketCreated: false,
+                        attempts: 0
                     });
 
-                    // Add a timeout to the AI generation
-                    let dynamicSteps;
-                    try {
-                        const timeoutPromise = new Promise((_, reject) =>
-                            setTimeout(() => reject(new Error('AI Generation Timeout')), 15000)
-                        );
-                        dynamicSteps = await Promise.race([
-                            aiService.generateDynamicSteps(text),
-                            timeoutPromise
-                        ]);
-                    } catch (error) {
-                        console.error("Dynamic steps failed or timed out:", error.message);
-                        dynamicSteps = await aiService.generateDynamicSteps(text, true); // Force fallback if needed
-                    }
-
-                    if (dynamicSteps && dynamicSteps.length > 0) {
-                        article = {
-                            id: `dynamic_${Date.now()}`,
-                            title: `Help: ${text.slice(0, 50)}`,
-                            steps: dynamicSteps
-                        };
-                        console.log(`✅ Generated ${dynamicSteps.length} AI-specific steps for: "${text}"`);
-                    }
-                } catch (err) {
-                    console.error("Error generating dynamic steps:", err);
+                    const step = article.steps[0];
+                    await smartSay({
+                        text: `I can help with that! Let's troubleshoot this.`,
+                        blocks: messageViews.troubleshootingStep(step.instruction, 1, article.steps.length, article.id)
+                    });
+                    return;
                 }
-            }
 
-            // Start Troubleshooting Flow if we have an article with steps
-            if (article && article.steps && article.steps.length > 0) {
-                conversationManager.updateConversationState(userId, {
-                    step: 1,
-                    currentArticle: article,
-                    ticketCreated: false,
-                    attempts: 0 // Reset attempts for new session
-                });
-
-                const step = article.steps[0];
+                // If no article found, generate AI-specific steps
+                console.log(`ℹ️ No article found. Generating AI-specific steps...`);
                 await smartSay({
-                    text: `I can help with that! Let's troubleshoot this.`,
-                    blocks: messageViews.troubleshootingStep(step.instruction, 1, article.steps.length, article.id)
-                });
-                return;
-            } else {
-                // Final fallback: Create ticket if no steps found/generated
-                conversationManager.updateConversationState(userId, {
-                    state: 'AWAITING_EMP_ID',
-                    pendingTicketData: {
-                        subject: `No Steps Found: ${text.slice(0, 30)}`,
-                        description: `Could not generate or find steps for user request: ${text}`,
-                        type: 'General'
-                    }
+                    text: "Troubleshooting Steps",
+                    blocks: [
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "Let me generate specific troubleshooting steps for your issue..."
+                            }
+                        }
+                    ]
                 });
 
+                // Add a timeout to the AI generation
+                let dynamicSteps;
+                try {
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('AI Generation Timeout')), 15000)
+                    );
+                    dynamicSteps = await Promise.race([
+                        aiService.generateDynamicSteps(text),
+                        timeoutPromise
+                    ]);
+                } catch (error) {
+                    console.error("⚠️ Dynamic steps failed or timed out:", error.message);
+                    dynamicSteps = await aiService.generateDynamicSteps(text, true); // Force fallback
+                }
+
+                if (dynamicSteps && dynamicSteps.length > 0) {
+                    article = {
+                        id: `dynamic_${Date.now()}`,
+                        title: `Help: ${text.slice(0, 50)}`,
+                        steps: dynamicSteps
+                    };
+                    console.log(`✅ Generated ${dynamicSteps.length} AI-specific steps`);
+
+                    conversationManager.updateConversationState(userId, {
+                        step: 1,
+                        currentArticle: article,
+                        ticketCreated: false,
+                        attempts: 0
+                    });
+
+                    const step = article.steps[0];
+                    await smartSay({
+                        text: `I can help with that! Let's troubleshoot this.`,
+                        blocks: messageViews.troubleshootingStep(step.instruction, 1, article.steps.length, article.id)
+                    });
+                    return;
+                } else {
+                    // Final fallback: Create ticket if no steps generated
+                    console.log(`⚠️ Could not generate steps. Offering ticket creation.`);
+                    conversationManager.updateConversationState(userId, {
+                        state: 'AWAITING_EMP_ID',
+                        pendingTicketData: {
+                            subject: `Issue: ${text.slice(0, 50)}`,
+                            description: `User request: ${text}`,
+                            type: 'General',
+                            originalText: text
+                        }
+                    });
+
+                    await say({
+                        channel: channelId,
+                        text: "I couldn't generate troubleshooting steps for this issue. I'll help you raise a ticket instead. Please provide your **Employee ID**:"
+                    });
+                    return;
+                }
+            } catch (error) {
+                console.error("❌ Error in troubleshooting flow:", error);
                 await say({
                     channel: channelId,
-                    text: "I attempted to find troubleshooting steps but couldn't identify a specific solution. I'll help you raise a ticket for this. First, could you please provide your **Employee ID**?"
+                    text: "I encountered an error while processing your request. Please try again or type 'create ticket' to raise a support ticket."
                 });
                 return;
             }
