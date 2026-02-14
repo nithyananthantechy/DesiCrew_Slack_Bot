@@ -7,12 +7,14 @@
         "display",
         "monitor",
         "tv",
-        "screen",
         "connect",
         "laptop",
         "projector",
         "external display",
-        "second screen"
+        "external monitor",
+        "second screen",
+        "dual monitor",
+        "displayport"
     ],
     "steps": [
         {
