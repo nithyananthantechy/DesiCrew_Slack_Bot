@@ -167,8 +167,7 @@ async function processMessage(text, userId, channelId, say, client, logger) {
             });
 
             const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' : 'Password Reset';
-            await say({
-                channel: channelId,
+            await smartSay({
                 text: `I'll help you raise a ${ticketTypeName} ticket. Please provide your **Employee ID**:`
             });
             return;
@@ -186,8 +185,7 @@ async function processMessage(text, userId, channelId, say, client, logger) {
                 }
             });
 
-            await say({
-                channel: channelId,
+            await smartSay({
                 text: `I'll help you raise a ticket for that. First, could you please provide your **Employee ID**?`
             });
             return;
@@ -303,16 +301,14 @@ async function processMessage(text, userId, channelId, say, client, logger) {
                         }
                     });
 
-                    await say({
-                        channel: channelId,
+                    await smartSay({
                         text: "I couldn't generate troubleshooting steps for this issue. I'll help you raise a ticket instead. Please provide your **Employee ID**:"
                     });
                     return;
                 }
             } catch (error) {
                 console.error("❌ Error in troubleshooting flow:", error);
-                await say({
-                    channel: channelId,
+                await smartSay({
                     text: "I encountered an error while processing your request. Please try again or type 'create ticket' to raise a support ticket."
                 });
                 return;
@@ -357,8 +353,7 @@ async function processMessage(text, userId, channelId, say, client, logger) {
         conversationManager.addMessageToHistory(userId, 'user', text);
     } catch (error) {
         logger.error("Error processing message:", error);
-        await say({
-            channel: channelId,
+        await smartSay({
             text: "I'm sorry, I encountered an unexpected error while processing your request. I'll notify our IT team."
         });
     }
