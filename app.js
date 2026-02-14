@@ -486,7 +486,7 @@ app.message(async ({ message, say, client, logger }) => {
     try {
         const intent = await aiService.detectIntent(cleanedText);
         logProcess(`Proactive intent check for "${cleanedText}": ${JSON.stringify(intent)}`);
-        if (intent.action === 'troubleshoot' || intent.action === 'create_ticket' || intent.needs_troubleshooting || (intent.action === 'answer' && intent.direct_answer)) {
+        if (intent.action === 'troubleshoot' || intent.action === 'create_ticket' || intent.action === 'quick_ticket' || intent.needs_troubleshooting || (intent.action === 'answer' && intent.direct_answer)) {
             return await processMessage(cleanedText, userId, channelId, say, client, logger);
         }
     } catch (err) {
