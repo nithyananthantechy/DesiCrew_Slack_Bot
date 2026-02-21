@@ -58,6 +58,7 @@ const fallbackDetectIntent = (text) => {
         lowerText.startsWith('morning') || lowerText.startsWith('evening')) {
         // Only if message is short (prevents matching technical issues starting with greeting)
         if (lowerText.split(/\s+/).length <= 4) {
+            console.log(`⚡ Fallback greeting match: "${lowerText}"`);
             return { action: "answer", direct_answer: "Hello! I'm your IT Helpdesk Assistant. How can I help you today?", needs_troubleshooting: false };
         }
     }
@@ -73,6 +74,7 @@ const detectIntent = async (userMessage) => {
 
     // Check if message starts with a greeting word and is short (max 4 words)
     if (greetings.includes(words[0]) && words.length <= 4) {
+        console.log(`⚡ Fast-path greeting match: "${words[0]}"`);
         return {
             action: "answer",
             direct_answer: "Hello! I'm your IT Helpdesk Assistant. I can help you troubleshoot technical issues or create a support ticket. What can I do for you today?",

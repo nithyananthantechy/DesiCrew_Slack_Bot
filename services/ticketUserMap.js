@@ -9,6 +9,9 @@ const ticketCache = new NodeCache({ stdTTL: 2592000 });
 // File path for persistence
 const MAPPING_FILE = path.join(__dirname, '../data/ticket_user_mappings.json');
 
+// Flag to ensure loading is complete
+let isLoaded = false;
+
 /**
  * Load mappings from file on startup
  */
@@ -23,13 +26,15 @@ const loadMappings = async () => {
                 });
                 console.log(`✅ Loaded ${Object.keys(data).length} ticket-user mappings from file`);
             } else {
-                console.log("ℹ️ Mapping file is empty. Starting fresh.");
+                console.log("ℹ️ Mapping file exists but is empty.");
             }
+        } else {
+            console.log("ℹ️ No mapping file found. Will create one on next save.");
         }
     } catch (error) {
-        console.error("Error loading ticket mappings (attempting reset):", error);
-        // If file is corrupted, start fresh
-        try { await fs.writeJson(MAPPING_FILE, {}, { spaces: 2 }); } catch (e) { }
+        console.error("Error loading ticket mappings:", error);
+    } finally {
+        isLoaded = true;
     }
 };
 
@@ -37,6 +42,10 @@ const loadMappings = async () => {
  * Save mappings to file for persistence
  */
 const saveMappings = async () => {
+    if (!isLoaded) {
+        console.warn("⚠️ Attempted to save mappings before load complete. Skipping to avoid data loss.");
+        return;
+    }
     try {
         const allKeys = ticketCache.keys();
         const mappings = {};
