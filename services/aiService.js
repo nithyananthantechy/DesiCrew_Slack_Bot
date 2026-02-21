@@ -85,17 +85,29 @@ const detectIntent = async (userMessage) => {
         };
     }
 
+    // 1.5 FAST BIOMETRIC REQUEST check
+    const isBiometricRequest = lowerText.includes('new biometric') || lowerText.includes('request biometric') ||
+        lowerText.includes('biometric access') || lowerText.includes('biometric request');
+    if (isBiometricRequest && words.length <= 6) {
+        console.log(`⚡ Fast-path biometric request match: "${lowerText}"`);
+        return {
+            action: "quick_ticket",
+            issue_type: "biometric",
+            needs_troubleshooting: false
+        };
+    }
+
     // 2. Full IT Assistant Prompt
     const prompt = `
 You are a concierge IT helpdesk assistant. Analyze: "${userMessage}"
-Provide JSON ONLY:
+Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT schema:
 {
   "issue_type": "network/printer/password/software/hardware/email/vpn/biometric/freshservice/domain_lock/password_reset/general_question",
-  "needs_troubleshooting": true/false,
-  "urgency": "critical/high/medium/low",
-  "suggested_article": "null or name",
-  "direct_answer": "friendly response if no troubleshooting",
-  "action": "create_ticket/troubleshoot/answer/quick_ticket/null"
+  "needs_troubleshooting": true,
+  "urgency": "medium",
+  "suggested_article": null,
+  "direct_answer": "friendly response",
+  "action": "create_ticket/troubleshoot/answer/quick_ticket"
 }
 Rules:
 - If user mentions "domain lock", "password reset", or "new biometric access" specifically, action="quick_ticket".
