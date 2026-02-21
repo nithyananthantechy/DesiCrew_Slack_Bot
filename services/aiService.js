@@ -66,18 +66,14 @@ const fallbackDetectIntent = (text) => {
         lowerText.includes('weird') || lowerText.includes('broken') || lowerText.includes('not working') ||
         lowerText.includes('issue') || lowerText.includes('problem') || lowerText.includes('error') ||
         lowerText.includes('help') || lowerText.includes('slow') || lowerText.includes('network') ||
-        lowerText.includes('internet') || lowerText.includes('wifi') || lowerText.includes('password') ||
-        lowerText.includes('login') || lowerText.includes('account') || lowerText.includes('printer') ||
-        lowerText.includes('mouse') || lowerText.includes('keyboard') || lowerText.includes('screen') ||
-        lowerText.includes('vpn') || lowerText.includes('biometric') || lowerText.includes('webcam') ||
-        lowerText.includes('power') || lowerText.includes('monitor');
+        lowerText.includes('internet') || lowerText.includes('wifi') || lowerText.includes('net ') || lowerText.includes('net_') || lowerText === 'net';
 
     if (isTicket) return { issue_type: "hardware", needs_troubleshooting: false, urgency: "medium", action: "create_ticket" };
 
     if (isTrouble) {
         // Detect specific type for better guided help
         let type = "hardware";
-        if (lowerText.includes('network') || lowerText.includes('internet') || lowerText.includes('wifi') || lowerText.includes('slow')) type = "network";
+        if (lowerText.includes('network') || lowerText.includes('internet') || lowerText.includes('wifi') || lowerText.includes('slow') || lowerText.includes('net')) type = "network";
         if (lowerText.includes('password') || lowerText.includes('login') || lowerText.includes('account')) type = "password";
         if (lowerText.includes('printer')) type = "printer";
         if (lowerText.includes('vpn')) type = "vpn";
@@ -130,7 +126,8 @@ Provide JSON ONLY:
 Rules:
 - If user mentions "domain lock" or "password reset" specifically, action="quick_ticket" with issue_type="domain_lock" or "password_reset".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
-- If user describes a problem (even vaguely, like "it's broken") but NO ticket yet, action="troubleshoot" and needs_troubleshooting=true.
+- If user describes a problem (even vaguely, like "it's broken" or shorthand like "net issue"), action="troubleshoot" and needs_troubleshooting=true.
+- Map "net" or "bandwidth" or "speed" to "network" issue_type.
 - Be aggressive with troubleshooting for any potential technical issue.
 - If the user is asking "who/what are you", provide a direct answer explaining you are an IT Helpdesk Bot.
 - If the input is purely social, an insult, or completely unrelated to IT, use action="answer" and provide a polite, professional direct_answer.
