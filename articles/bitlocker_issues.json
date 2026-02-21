@@ -1,0 +1,35 @@
+{
+    "issue_type": "bitlocker",
+    "title": "BitLocker Recovery & Encryption Issues",
+    "description": "Assistance with BitLocker recovery keys and drive encryption.",
+    "keywords": [
+        "bitlocker",
+        "recovery key",
+        "encryption",
+        "drive locked",
+        "unlock drive",
+        "blue screen bitlocker"
+    ],
+    "steps": [
+        {
+            "title": "Restart System",
+            "instruction": "Sometimes a simple restart resolves temporary TPM recognition issues. Restart your computer and see if it boots normally."
+        },
+        {
+            "title": "Remove External Devices",
+            "instruction": "Unplug all USB drives, docking stations, and peripherals. Restart the computer again. External devices can sometimes change the boot order."
+        },
+        {
+            "title": "Locate Recovery Key",
+            "instruction": "If asked for a key, check your dedicated BitLocker portal (if available) or your Microsoft Account at https://account.microsoft.com/devices/recoverykey."
+        },
+        {
+            "title": "BIOS/TPM Check",
+            "instruction": "If you recently updated BIOS, ensure TPM is enabled in BIOS settings. (Only for advanced users)."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If you cannot find your key or the drive remains locked, raise a ticket with: Asset ID, Computer Name, and screen photo of the BitLocker prompt."
+        }
+    ]
+}

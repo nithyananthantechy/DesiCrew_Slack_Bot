@@ -1,0 +1,35 @@
+{
+    "issue_type": "docking_station",
+    "title": "Docking Station Troubleshooting",
+    "description": "Resolving issues with laptop docking stations, including display, USB, and charging failures.",
+    "keywords": [
+        "dock",
+        "docking station",
+        "hub",
+        "usb-c dock",
+        "monitors not working",
+        "dock not charging"
+    ],
+    "steps": [
+        {
+            "title": "Power Cycle Dock",
+            "instruction": "Unplug the docking station from the laptop AND the power outlet. Wait 30 seconds. Plug power back into dock, then dock into laptop."
+        },
+        {
+            "title": "Check Connections",
+            "instruction": "Ensure the USB-C cable is firmly connected to the correct port on your laptop (look for a thunderbolt or charging icon)."
+        },
+        {
+            "title": "Update Firmware/Drivers",
+            "instruction": "Run your manufacturer's update tool (e.g., Dell Command Update, Lenovo Vantage) to check for dock firmware updates."
+        },
+        {
+            "title": "Test Without Dock",
+            "instruction": "Plug devices (monitor, mouse) directly into the laptop to confirm if the issue is the device or the dock."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If the dock fails, raise a ticket with: Dock Model Number (from bottom sticker), Laptop Asset ID, and description of what isn't working (e.g., 'Monitors off', 'Not charging')."
+        }
+    ]
+}

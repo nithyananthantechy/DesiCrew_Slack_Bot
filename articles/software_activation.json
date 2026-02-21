@@ -1,0 +1,35 @@
+{
+    "issue_type": "software_activation",
+    "title": "Software License & Activation",
+    "description": "Resolving product activation errors for Windows, Office, and other licensed software.",
+    "keywords": [
+        "activation",
+        "license",
+        "product key",
+        "unlicensed product",
+        "activate windows",
+        "activate office"
+    ],
+    "steps": [
+        {
+            "title": "Check Login Account",
+            "instruction": "For Office 365: Open an app (e.g., Word), go to File > Account. Ensure you are signed in with your work email address."
+        },
+        {
+            "title": "Connect to VPN/Network",
+            "instruction": "Enterprise licenses often require connection to the company network (KMS). Connect to VPN and wait 15-30 minutes."
+        },
+        {
+            "title": "Update License",
+            "instruction": "In Key Management (OS settings) or App Account settings, look for an 'Update License' or 'Fix Me' button."
+        },
+        {
+            "title": "Restart System",
+            "instruction": "Sometimes background licensing services get stuck. A full restart can refresh these services."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If activation fails, raise a ticket with: Screenshot of the activation error, Software Name, and your PC Asset ID."
+        }
+    ]
+}

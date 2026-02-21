@@ -1,0 +1,35 @@
+{
+    "issue_type": "phishing",
+    "title": "Reporting Suspicious Emails (Phishing)",
+    "description": "How to identify and report suspicious emails, spam, or phishing attempts.",
+    "keywords": [
+        "phishing",
+        "spam",
+        "suspicious email",
+        "virus email",
+        "report email",
+        "fake email"
+    ],
+    "steps": [
+        {
+            "title": "Do Not Click",
+            "instruction": "Do NOT click any links or download any attachments if you suspect an email is malicious."
+        },
+        {
+            "title": "Check Sender",
+            "instruction": "Verify the sender's email address carefully. Look for slight misspellings (e.g., @micros0ft.com instead of @microsoft.com)."
+        },
+        {
+            "title": "Report Button",
+            "instruction": " use the 'Report Phishing' button in Outlook (usually in the top ribbon) to automatically alert the security team."
+        },
+        {
+            "title": "Delete Email",
+            "instruction": "Once reported, permanently delete the email from your Inbox and Deleted Items."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If you accidentally clicked a link or entered credentials, IMMEDIATELLY raise a ticket with 'Urgent: Phishing Clicked' and call the Helpdesk."
+        }
+    ]
+}

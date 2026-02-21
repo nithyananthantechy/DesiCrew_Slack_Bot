@@ -1,0 +1,36 @@
+{
+    "issue_type": "mfa",
+    "title": "MFA & Authenticator App Issues",
+    "description": "Troubleshooting Multi-Factor Authentication (MFA) and Authenticator app problems.",
+    "keywords": [
+        "mfa",
+        "2fa",
+        "authenticator",
+        "code not working",
+        "otp",
+        "verification",
+        "microsoft authenticator"
+    ],
+    "steps": [
+        {
+            "title": "Check Time Settings",
+            "instruction": "Ensure the time execution settings on your phone are set to 'Automatic'. Mismatched time causes codes to fail."
+        },
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Ensure your phone has a stable internet connection (Wi-Fi or Mobile Data) to receive push notifications."
+        },
+        {
+            "title": "Use One-Time Code",
+            "instruction": "If push notification fails, open the authenticator app manually and enter the 6-digit One-Time Password (OTP) displayed."
+        },
+        {
+            "title": "Update App",
+            "instruction": "Check the App Store or Play Store to ensure your Authenticator app is updated to the latest version."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If you lost your phone or cannot access the app, raise a ticket to request an 'MFA Reset' with your Employee ID and Mobile Number."
+        }
+    ]
+}

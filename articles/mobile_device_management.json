@@ -1,0 +1,35 @@
+{
+    "issue_type": "mdm",
+    "title": "Mobile Device Management (Intune)",
+    "description": "Assistance with Company Portal, work email on phone, and device compliance.",
+    "keywords": [
+        "intune",
+        "company portal",
+        "work email on phone",
+        "device compliance",
+        "compliant",
+        "mdm"
+    ],
+    "steps": [
+        {
+            "title": "Check Compliance Status",
+            "instruction": "Open the 'Company Portal' app on your device and check if your device is marked as 'Compliant'. Follow any prompts to fix issues."
+        },
+        {
+            "title": "Update OS",
+            "instruction": "Ensure your phone's operating system (iOS or Android) is up to date. Outdated OS versions are often blocked."
+        },
+        {
+            "title": "Sync Device",
+            "instruction": "In Company Portal, select your device, tap the menu (three dots), and select 'Check Status' or 'Sync'."
+        },
+        {
+            "title": "Reinstall Profile",
+            "instruction": "If email stops working, try removing the work profile/account and re-enrolling via Company Portal."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If you cannot access work apps, raise a ticket with: Device Model, OS Version, and screenshot of the error in Company Portal."
+        }
+    ]
+}

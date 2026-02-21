@@ -1,0 +1,36 @@
+{
+    "issue_type": "adobe_pdf",
+    "title": "Adobe Acrobat & PDF Issues",
+    "description": "Troubleshooting problems with opening, editing, or signing PDF documents.",
+    "keywords": [
+        "adobe",
+        "acrobat",
+        "pdf",
+        "reader",
+        "cannot open pdf",
+        "signature",
+        "edit pdf"
+    ],
+    "steps": [
+        {
+            "title": "Restart Application",
+            "instruction": "Close all Adobe windows. Check Task Manager to ensure no background 'Acrobat' processes are running, then reopen."
+        },
+        {
+            "title": "Repair Installation",
+            "instruction": "Open Adobe Acrobat, go to the 'Help' menu, and select 'Repair Installation'. Restart your computer after it finishes."
+        },
+        {
+            "title": "Update Application",
+            "instruction": "Go to 'Help' > 'Check for Updates' to ensure you are on the latest patch version."
+        },
+        {
+            "title": "Default App Settings",
+            "instruction": "Right-click a PDF file > Open with > Choose another app > Select Adobe Acrobat > Check 'Always use this app to open .pdf files'."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If issues persist, raise a ticket with: Screenshot of error message, Adobe Version, and whether it affects all files or just one."
+        }
+    ]
+}

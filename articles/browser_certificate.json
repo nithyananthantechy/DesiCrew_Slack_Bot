@@ -1,0 +1,35 @@
+{
+    "issue_type": "browser_cert",
+    "title": "Browser Certificate Errors",
+    "description": "Troubleshooting 'Connection Not Secure' and SSL certificate errors.",
+    "keywords": [
+        "ssl error",
+        "certificate error",
+        "connection not private",
+        "not secure",
+        "clock error",
+        "website blocked"
+    ],
+    "steps": [
+        {
+            "title": "Check System Time",
+            "instruction": "Incorrect system date/time is the #1 cause of certificate errors. Ensure your computer's clock is correct."
+        },
+        {
+            "title": "Clear SSL State",
+            "instruction": "In Windows, search for 'Internet Options', go to 'Content' tab, and click 'Clear SSL State'."
+        },
+        {
+            "title": "Try Incognito/Private Mode",
+            "instruction": "Open the site in Incognito mode. If it works, clear your browser cache and cookies."
+        },
+        {
+            "title": "Update Browser",
+            "instruction": "Ensure your browser (Chrome/Edge) is updated to the latest version via Settings > Help > About."
+        },
+        {
+            "title": "Ticket Preparation",
+            "instruction": "If the error persists on internal company sites, raise a ticket with the URL and a screenshot of the error code (e.g., ERR_CERT_DATE_INVALID)."
+        }
+    ]
+}
