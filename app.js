@@ -505,23 +505,30 @@ app.message(async ({ message, say, client, logger }) => {
     }
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
-    // Skip if it's a known greeting to avoid unnecessary KB/AI processing
-    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)(\s+.*)?$/i.test(cleanedText);
+    // BUT in dedicated helpdesk channels, we might want to be more friendly.
+    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)$/i.test(cleanedText);
+
     if (isGreeting) {
-        console.log(`ℹ️ Ignoring proactive greeting in channel: "${cleanedText}"`);
+        try {
+            const channelInfo = await client.conversations.info({ channel: channelId });
+            const chName = (channelInfo.channel.name || "").toLowerCase();
+            const isHelpChannel = chName.includes('help') || chName.includes('desk') || chName.includes('it-');
+
+            if (isHelpChannel) {
+                console.log(`⚡ Greeting detected in help channel: "${cleanedText}". Responding.`);
+                return await processMessage(cleanedText, userId, channelId, say, client, logger);
+            }
+        } catch (err) {
+            console.error("Error checking channel info:", err);
+        }
+        console.log(`ℹ️ Social cue detected in regular channel: "${cleanedText}". Ignoring.`);
         return;
     }
 
-    // Special check: ignore very short messages in channels unless mentioned
-    if (cleanedText.length < 3) {
-        console.log(`ℹ️ Ignoring very short message in channel: "${cleanedText}"`);
-        return;
-    }
-
-    // BUT we should check Knowledge Base FIRST for a match to be instant!
+    // Knowledge Base Check
     const articleMatch = knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
-        console.log(`⚡ Proactive KB match found for "${cleanedText}", bypassing AI.`);
+        console.log(`⚡ Proactive KB match: ${articleMatch.title}`);
         return await processMessage(cleanedText, userId, channelId, say, client, logger);
     }
 

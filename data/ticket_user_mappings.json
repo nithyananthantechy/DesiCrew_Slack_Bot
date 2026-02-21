@@ -5,9 +5,8 @@
     "ticketType": "domain_lock",
     "isSensitive": true,
     "createdAt": "2026-02-14T15:28:50.200Z"
-  }
-}
- "TEST-002": {
+  },
+  "TEST-002": {
     "userId": "U67890",
     "channelId": "D67890",
     "ticketType": "password_reset",
