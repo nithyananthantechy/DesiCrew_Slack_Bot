@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "Linux Service Management",
+    "description": "How to start, stop, and troubleshoot system services (systemd) on Linux.",
+    "keywords": [
+        "restart service linux",
+        "systemctl status",
+        "service failed linux",
+        "start daemon linux",
+        "check logs service",
+        "service won't start"
+    ],
+    "steps": [
+        {
+            "title": "Check Service Status",
+            "instruction": "Run 'sudo systemctl status <service_name>'. Look for 'Active: failed' and the last few lines of error logs."
+        },
+        {
+            "title": "Restart the Service",
+            "instruction": "Run 'sudo systemctl restart <service_name>'. This is the quickest fix for frozen or hung backend processes."
+        },
+        {
+            "title": "View Detailed Logs",
+            "instruction": "Run 'sudo journalctl -u <service_name> -e'. This gives you the full error history specifically for that service."
+        },
+        {
+            "title": "Check for Port Conflicts",
+            "instruction": "If a web service fails: 'sudo netstat -tulpn | grep <port_number>'. Ensure another app isn't already using the required port."
+        },
+        {
+            "title": "Validate Config Files",
+            "instruction": "Many services (like Nginx or Docker) have a test command: 'sudo nginx -t'. Use it to check for syntax errors in your configurations."
+        }
+    ]
+}

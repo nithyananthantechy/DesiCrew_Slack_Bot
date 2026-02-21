@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "Windows Registry & System Fix",
+    "description": "Resolve deep system errors and registry-related stability issues on Windows.",
+    "keywords": [
+        "registry error",
+        "regedit fix",
+        "broken system files",
+        "windows corruption",
+        "sfc scannow",
+        "dism restore"
+    ],
+    "steps": [
+        {
+            "title": "Run System File Checker (SFC)",
+            "instruction": "CMD as Admin → type 'sfc /scannow'. This scans all protected system files and replaces corrupted ones with a cached copy."
+        },
+        {
+            "title": "Run Image Repair (DISM)",
+            "instruction": "If SFC fails: CMD as Admin → 'dism /online /cleanup-image /restorehealth'. This downloads fresh system files from Microsoft servers."
+        },
+        {
+            "title": "Fix Broken Registry Keys",
+            "instruction": "Avoid 'Registry Cleaners'. Instead, find the specific app's key in 'regedit' under HKEY_CURRENT_USER\\Software and delete only that app's folder to reset it."
+        },
+        {
+            "title": "Check Disk for File System Errors",
+            "instruction": "CMD as Admin → 'chkdsk C: /f'. You will need to reboot; this fixes logical errors in the file structure that look like registry bugs."
+        },
+        {
+            "title": "System Restore",
+            "instruction": "Type 'rstrui' in Start menu. Choose a point before the issues started. This is the safest way to revert complex registry changes."
+        }
+    ]
+}

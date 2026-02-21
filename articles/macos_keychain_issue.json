@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "macOS Keychain Issues",
+    "description": "Fix constant password prompts and Keychain login errors on macOS.",
+    "keywords": [
+        "macos keychain",
+        "keychain password",
+        "accountsd wants to use keychain",
+        "keychain login error",
+        "mac password prompt",
+        "keychain access"
+    ],
+    "steps": [
+        {
+            "title": "Repair Keychain",
+            "instruction": "Open 'Keychain Access' app → Click 'Keychain Access' in menu bar → 'Settings' (or Preferences) → 'Reset Default Keychains'. This creates a fresh start."
+        },
+        {
+            "title": "Lock/Unlock Keychain",
+            "instruction": "Right-click the 'login' keychain in the sidebar → 'Lock Keychain login' → then 'Unlock Keychain login'. This refreshes the session."
+        },
+        {
+            "title": "Delete Corrupted Items",
+            "instruction": "Search for specific app names in Keychain Access and delete entries that are causing repeated prompts. Re-login to the app to recreate them."
+        },
+        {
+            "title": "Sync with Login Password",
+            "instruction": "Keychain Access → Edit → 'Change Password for Keychain login'. Ensure it matches your macOS login password to prevent prompts."
+        },
+        {
+            "title": "Clear Local Items Cache",
+            "instruction": "In Finder, Go → Go to Folder → '~/Library/Keychains'. Delete the folder with the long random string ID and restart immediately."
+        }
+    ]
+}

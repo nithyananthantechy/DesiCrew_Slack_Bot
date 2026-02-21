@@ -1,0 +1,35 @@
+{
+    "issue_type": "security",
+    "title": "macOS App Permissions & Security",
+    "description": "Fix 'App cannot be opened' and camera/microphone/disk access issues on macOS.",
+    "keywords": [
+        "macos app permission",
+        "cannot be opened because it is from an unidentified developer",
+        "mac camera not working",
+        "mac microphone blocked",
+        "full disk access mac",
+        "gatekeeper mac"
+    ],
+    "steps": [
+        {
+            "title": "Allow Unidentified Apps",
+            "instruction": "System Settings → Privacy & Security → Scroll to 'Security' section → Click 'Open Anyway' for the blocked app."
+        },
+        {
+            "title": "Reset Camera/Mic Permissions",
+            "instruction": "System Settings → Privacy & Security → Microphone/Camera. Toggle the switch off and on for the specific app (like Slack or Zoom)."
+        },
+        {
+            "title": "Grant Full Disk Access",
+            "instruction": "System Settings → Privacy & Security → Full Disk Access → Click '+' and add apps like Terminal or Backup tools if they can't see files."
+        },
+        {
+            "title": "Manual Gatekeeper Bypass",
+            "instruction": "Open Terminal and run: 'sudo xattr -rd com.apple.quarantine /Applications/AppName.app'. This manually clears the 'quarantine' flag."
+        },
+        {
+            "title": "Check Screen Recording",
+            "instruction": "For screen sharing issues: System Settings → Privacy & Security → Screen Recording. Ensure your communication app is authorized."
+        }
+    ]
+}

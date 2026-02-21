@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "Linux Permissions & Ownership",
+    "description": "Fix 'Permission Denied' errors and file ownership problems on Linux systems.",
+    "keywords": [
+        "linux permission denied",
+        "chmod error",
+        "chown fix",
+        "sudo permission",
+        "file ownership linux",
+        "access denied linux"
+    ],
+    "steps": [
+        {
+            "title": "Check Current Permissions",
+            "instruction": "Run 'ls -l <filename>'. Identify the owner, group, and permission bits (rwx)."
+        },
+        {
+            "title": "Change File Ownership",
+            "instruction": "Use 'sudo chown yourusername:yourusername <filename>' to take ownership of a file that belongs to root."
+        },
+        {
+            "title": "Modify Permission Bits",
+            "instruction": "Use 'chmod 644' for files and 'chmod 755' for directories. Avoid 'chmod 777' as it is a major security risk."
+        },
+        {
+            "title": "Check Sudoers File",
+            "instruction": "If sudo fails: 'sudo -l'. Ensure your user is in the 'sudo' or 'wheel' group."
+        },
+        {
+            "title": "Identify Blocked Process",
+            "instruction": "If a service can't write: 'grep -i deny /var/log/audit/audit.log' to check for SELinux or AppArmor blocks."
+        }
+    ]
+}

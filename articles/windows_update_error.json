@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "Windows Update Errors",
+    "description": "Fix stuck updates, error codes (0x80...), and failed Windows installations.",
+    "keywords": [
+        "windows update fails",
+        "stuck at 0%",
+        "windows update error",
+        "cannot install updates",
+        "0x80070005",
+        "kb update fail"
+    ],
+    "steps": [
+        {
+            "title": "Run Update Troubleshooter",
+            "instruction": "Settings → Update & Security → Troubleshoot → Additional troubleshooters → Windows Update → Run the troubleshooter."
+        },
+        {
+            "title": "Reset Update Components",
+            "instruction": "CMD as Admin → 'net stop wuauserv' and 'net stop bits'. Then rename the SoftwareDistribution folder to clear the cache."
+        },
+        {
+            "title": "Run SFC and DISM",
+            "instruction": "CMD as Admin → 'sfc /scannow' followed by 'dism /online /cleanup-image /restorehealth'. This fixes corrupt files blocking updates."
+        },
+        {
+            "title": "Check Disk Space",
+            "instruction": "Ensure you have at least 20GB of free space. Updates often fail silently if the drive is nearly full."
+        },
+        {
+            "title": "Manual Download",
+            "instruction": "If a specific KB fails, go to the 'Microsoft Update Catalog' website, search for the KB number, and download/install it manually."
+        }
+    ]
+}

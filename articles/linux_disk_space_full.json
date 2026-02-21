@@ -1,0 +1,35 @@
+{
+    "issue_type": "performance",
+    "title": "Linux Disk Space Full",
+    "description": "Identify and clean up large files and logs on Linux when disk space is 100%.",
+    "keywords": [
+        "linux disk full",
+        "out of disk space linux",
+        "clean up linux logs",
+        "df -h 100%",
+        "large file search linux",
+        "apt cache clean"
+    ],
+    "steps": [
+        {
+            "title": "Identify Full Partition",
+            "instruction": "Run 'df -h'. Look for any partition at 100% usage (especially / or /var)."
+        },
+        {
+            "title": "Find Large Directories",
+            "instruction": "Run 'sudo du -sh /* | sort -h'. This shows you the size of all top-level directories to narrow down the problem."
+        },
+        {
+            "title": "Clean Package Cache",
+            "instruction": "For Ubuntu/Debian: 'sudo apt clean'. For CentOS/RHEL: 'sudo yum clean all'. This removes old downloaded installers."
+        },
+        {
+            "title": "Rotate Large Logs",
+            "instruction": "Check '/var/log'. If 'syslog' or 'journal' is huge, use 'sudo journalctl --vacuum-time=1d' to clear old logs."
+        },
+        {
+            "title": "Check for Deleted but Open Files",
+            "instruction": "Run 'sudo lsof / | grep deleted'. If a process still has a large deleted file open, it won't free the space until you restart that process."
+        }
+    ]
+}
