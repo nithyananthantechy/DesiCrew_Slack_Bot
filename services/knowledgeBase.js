@@ -74,7 +74,8 @@ const findArticle = (issueTypeOrQuery) => {
 
             // Exact full phrase match (highest weight)
             if (query.includes(kw)) score += 10;
-            if (kw.includes(query)) score += 5;
+            // Only match keyword as substring if query is long enough (prevents "hi" -> "high cpu")
+            if (query.length >= 4 && kw.includes(query)) score += 5;
 
             // Word-by-word matching for shorthand (e.g., "syn" -> "syncing")
             queryWords.forEach(word => {

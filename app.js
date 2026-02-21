@@ -505,6 +505,12 @@ app.message(async ({ message, say, client, logger }) => {
     }
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
+    // Skip if it's a known greeting to avoid unnecessary KB/AI processing
+    const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening'];
+    if (greetings.includes(cleanedText.toLowerCase())) {
+        return;
+    }
+
     // BUT we should check Knowledge Base FIRST for a match to be instant!
     const articleMatch = knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
