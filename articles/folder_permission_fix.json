@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Folder Permission Fix",
+    "description": "Resolve 'Access Denied' or 'Permission Required' errors for shared folders.",
+    "keywords": [
+        "access denied",
+        "folder permission",
+        "cannot open folder",
+        "shared drive",
+        "network folder",
+        "permission error"
+    ],
+    "steps": [
+        {
+            "title": "Check Network Connection",
+            "instruction": "Ensure you are connected to the company network or VPN to access shared network drives."
+        },
+        {
+            "title": "Verify Path",
+            "instruction": "Ensure the folder path is correct and hasn't been moved or renamed by another user."
+        },
+        {
+            "title": "Check Inherited Permissions",
+            "instruction": "Right-click folder → Properties → Security → Advanced. Check if your user group is listed."
+        },
+        {
+            "title": "Reconnect Network Drive",
+            "instruction": "Disconnect the network drive (Z:, P:, etc.) and remap it using the full server path."
+        },
+        {
+            "title": "Request IT Access",
+            "instruction": "If all fails, your access may have expired. Provide the folder path to IT to request a renewal."
+        }
+    ]
+}

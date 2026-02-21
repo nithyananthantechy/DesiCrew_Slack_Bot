@@ -268,13 +268,18 @@ Example:
                 });
                 jsonString = completion.choices[0].message.content;
             } else if (provider === 'ollama' && ollama) {
-                // Simplified prompt for small local models to ensure 5 steps
-                const ollamaPrompt = `You are an IT Expert. Generate EXACTLY 5 troubleshooting steps for this issue: \"${issueDescription}\". 
-                Return ONLY a JSON object: {\"steps\": [{\"title\": \"Step 1\", \"actions\": [\"action1\"], \"expected_result\": \"...\"}, ... ]}`;
+                // Optimized prompt for Llama3 to ensure strict JSON adherence
+                const ollamaPrompt = `[INST] You are an IT Support Expert. Generate EXACTLY 5 troubleshooting steps for: "${issueDescription}".
+                
+                RESPONSE RULES:
+                1. Return ONLY a valid JSON object.
+                2. Format: {"steps": [{"title": "Step Name", "actions": ["action 1", "action 2"], "expected_result": "result"}]}
+                3. DO NOT include any introductory or concluding text. [/INST]`;
 
                 const completion = await ollama.chat.completions.create({
                     messages: [{ role: "user", content: ollamaPrompt }],
-                    model: config.ollama.model
+                    model: config.ollama.model,
+                    temperature: 0.2 // Lower temp for more consistent JSON
                 });
                 jsonString = completion.choices[0].message.content;
             } else continue;
@@ -379,13 +384,19 @@ const generateResponse = async (userMessage, history) => {
             } else if ((provider === 'openai' && openai) || (provider === 'ollama' && ollama)) {
                 const client = provider === 'openai' ? openai : ollama;
                 const model = provider === 'openai' ? config.openai.model : config.ollama.model;
+
+                // Add Llama3 specific tags if using Ollama
+                const contentPrefix = provider === 'ollama' ? '[INST] ' : '';
+                const contentSuffix = provider === 'ollama' ? ' [/INST]' : '';
+
                 const completion = await client.chat.completions.create({
                     messages: [
                         { role: "system", content: "You are a friendly and professional IT helpdesk assistant." },
                         ...history,
-                        { role: "user", content: userMessage }
+                        { role: "user", content: `${contentPrefix}${userMessage}${contentSuffix}` }
                     ],
-                    model: model
+                    model: model,
+                    temperature: 0.7
                 });
                 return completion.choices[0].message.content;
             }

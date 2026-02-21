@@ -1,0 +1,36 @@
+{
+    "issue_type": "software",
+    "title": "Slack Application Issues",
+    "description": "Troubleshoot common Slack Desktop and Mobile app problems.",
+    "keywords": [
+        "slack not working",
+        "slack crash",
+        "slack slow",
+        "slack notifications",
+        "slack blank screen",
+        "slack login",
+        "slack error"
+    ],
+    "steps": [
+        {
+            "title": "Clear Slack Cache",
+            "instruction": "Help → Troubleshooting → Clear Cache and Restart. This fixes most performance and loading issues."
+        },
+        {
+            "title": "Force Quit and Restart",
+            "instruction": "Completely close Slack (Cmd+Q on Mac or Task Manager on Windows) and relaunch it."
+        },
+        {
+            "title": "Check for Updates",
+            "instruction": "Help → Check for Updates. Ensure you are running the latest version for security and bug fixes."
+        },
+        {
+            "title": "Reset App Data",
+            "instruction": "Help → Troubleshooting → Reset App Data. Warning: This will log you out of all workspaces."
+        },
+        {
+            "title": "Check Slack System Status",
+            "instruction": "Visit status.slack.com to see if there is a global outage affecting the service."
+        }
+    ]
+}

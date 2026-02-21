@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Windows Activation Error",
+    "description": "Fix 'Windows is not activated' or 'Activation failed' messages.",
+    "keywords": [
+        "windows activation",
+        "not activated",
+        "product key",
+        "0x8007007B",
+        "windows license",
+        "activate windows"
+    ],
+    "steps": [
+        {
+            "title": "Verify Internet Connection",
+            "instruction": "Ensure you are connected to the company network (or VPN) as activation often requires the KMS server."
+        },
+        {
+            "title": "Run Activation Troubleshooter",
+            "instruction": "Settings → Update & Security → Activation → Troubleshoot. Windows will attempt to self-repair."
+        },
+        {
+            "title": "Sync System Time",
+            "instruction": "Right-click clock → Adjust date/time → Sync now. Incorrect time can prevent activation."
+        },
+        {
+            "title": "Command Prompt Activation",
+            "instruction": "Run CMD as Admin → type 'slmgr.vbs /ato' and press Enter to force activation."
+        },
+        {
+            "title": "Check Organization License",
+            "instruction": "Verify with IT if your machine is listed under the company's enterprise agreement."
+        }
+    ]
+}

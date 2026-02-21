@@ -1,0 +1,36 @@
+{
+    "issue_type": "general_question",
+    "title": "IT Policy Common Questions",
+    "description": "Quick reference for company IT policies and standard operating procedures.",
+    "keywords": [
+        "it policy",
+        "standard software",
+        "request hardware",
+        "security policy",
+        "wifi password",
+        "guest access",
+        "work from home"
+    ],
+    "steps": [
+        {
+            "title": "Software Requests",
+            "instruction": "All non-standard software must be approved by the Security Team before installation."
+        },
+        {
+            "title": "Hardware Procurement",
+            "instruction": "Requests for new laptops or accessories must be raised through the internal ticketing portal with manager approval."
+        },
+        {
+            "title": "Guest WiFi",
+            "instruction": "Guest access is for visitors only. Employees should always use the 'Enterprise' secure network."
+        },
+        {
+            "title": "Data Security",
+            "instruction": "Never share passwords. Lock your machine (Win+L) whenever you leave your desk."
+        },
+        {
+            "title": "Remote Work",
+            "instruction": "Always use the company VPN when accessing internal resources from home or public networks."
+        }
+    ]
+}
