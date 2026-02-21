@@ -54,8 +54,12 @@ const fallbackDetectIntent = (text) => {
     }
 
     // Greeting logic
-    if (lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('hey')) {
-        return { action: "answer", direct_answer: "Hello! I'm your IT Helpdesk Assistant. How can I help you today?", needs_troubleshooting: false };
+    if (lowerText.startsWith('hi') || lowerText.startsWith('hello') || lowerText.startsWith('hey') ||
+        lowerText.startsWith('morning') || lowerText.startsWith('evening')) {
+        // Only if message is short (prevents matching technical issues starting with greeting)
+        if (lowerText.split(/\s+/).length <= 4) {
+            return { action: "answer", direct_answer: "Hello! I'm your IT Helpdesk Assistant. How can I help you today?", needs_troubleshooting: false };
+        }
     }
 
     return { action: "answer", direct_answer: "I'm here to help with IT issues. What's on your mind?", needs_troubleshooting: false };
@@ -63,9 +67,11 @@ const fallbackDetectIntent = (text) => {
 
 const detectIntent = async (userMessage) => {
     // 1. FAST GREETING check
-    const lowerText = userMessage.trim().toLowerCase();
     const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening', 'hola'];
-    if (greetings.includes(lowerText)) {
+    const words = lowerText.split(/\s+/);
+
+    // Check if message starts with a greeting word and is short (max 4 words)
+    if (greetings.includes(words[0]) && words.length <= 4) {
         return {
             action: "answer",
             direct_answer: "Hello! I'm your IT Helpdesk Assistant. I can help you troubleshoot technical issues or create a support ticket. What can I do for you today?",

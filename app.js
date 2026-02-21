@@ -516,8 +516,10 @@ app.message(async ({ message, say, client, logger }) => {
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
     // BUT in dedicated helpdesk channels, we might want to be more friendly.
-    // Enhanced greeting regex to handle "hi" even with some noise
-    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)$/i.test(cleanedText.toLowerCase());
+    // Enhanced greeting check to handle "Hi bot", "Hello team", etc.
+    const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening', 'hola'];
+    const words = cleanedText.toLowerCase().split(/\s+/);
+    const isGreeting = greetings.includes(words[0]) && words.length <= 4;
 
     if (isGreeting) {
         console.log(`⚡ Greeting detected: "${cleanedText}". Responding instantly.`);
