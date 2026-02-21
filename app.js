@@ -145,8 +145,11 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
-        console.log(`🔍 Checking Knowledge Base for instant match: "${text}"`);
-        const article = knowledgeBase.findArticle(text);
+        // Skip for "new" requests or "tickets" to allow AI to handle them as Quick Tickets
+        const isRequest = text.toLowerCase().includes('new') || text.toLowerCase().includes('request') ||
+            text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise');
+
+        const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
             console.log(`✅ Instant KB Match found: ${article.title}`);
             conversationManager.updateConversationState(userId, {
