@@ -137,8 +137,7 @@ Rules:
 `;
 
     for (const provider of config.priority) {
-        // Skip Ollama for intent detection to keep it fast (Regex is better here)
-        if (provider === 'ollama') continue;
+        if (provider === 'ollama' && !ollama) continue;
 
         try {
             console.log(`Trying ${provider} for intent detection...`);
@@ -155,12 +154,18 @@ Rules:
                     timeoutPromise
                 ]);
                 jsonString = (await result.response).text();
-            } else if (provider === 'openai' && openai) {
+            } else if ((provider === 'openai' && openai) || (provider === 'ollama' && ollama)) {
+                const client = provider === 'openai' ? openai : ollama;
+                const model = provider === 'openai' ? config.openai.model : config.ollama.model;
+
                 const completion = await Promise.race([
-                    openai.chat.completions.create({
-                        messages: [{ role: "system", content: "You are a helpful IT assistant. JSON ONLY." }, { role: "user", content: prompt }],
-                        model: config.openai.model,
-                        response_format: { type: "json_object" }
+                    client.chat.completions.create({
+                        messages: [
+                            { role: "system", content: "You are a helpful IT assistant. JSON ONLY." },
+                            { role: "user", content: prompt }
+                        ],
+                        model: model,
+                        response_format: provider === 'openai' ? { type: "json_object" } : undefined
                     }),
                     timeoutPromise
                 ]);
