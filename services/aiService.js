@@ -67,6 +67,7 @@ const fallbackDetectIntent = (text) => {
 
 const detectIntent = async (userMessage) => {
     // 1. FAST GREETING check
+    const lowerText = userMessage.trim().toLowerCase();
     const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening', 'hola'];
     const words = lowerText.split(/\s+/);
 
