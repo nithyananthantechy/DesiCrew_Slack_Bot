@@ -411,6 +411,7 @@ ${data.description}
         // Use say (public) for ticket confirmation so team knows
         await say({
             channel: channelId,
+            text: `Support ticket #${ticket.id} created successfully.`,
             blocks: messageViews.ticketCreated(ticket.id)
         });
 

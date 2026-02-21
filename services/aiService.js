@@ -136,6 +136,20 @@ Rules:
 - If the input is purely social, an insult, or completely unrelated to IT, use action="answer" and provide a polite, professional direct_answer.
 `;
 
+    // 1. INSTANT GREETING CHECK (Avoids spending 15s on Ollama for 'Hi')
+    const lowerText = userMessage.trim().toLowerCase();
+    const greetings = ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening', 'hola'];
+    if (greetings.includes(lowerText)) {
+        console.log("Instant greeting detected. Bypassing AI.");
+        return {
+            issue_type: "general_question",
+            needs_troubleshooting: false,
+            urgency: "low",
+            action: "answer",
+            direct_answer: "Hello! I'm your IT Helpdesk Assistant. I can help you troubleshoot technical issues or create a support ticket. What can I do for you today?"
+        };
+    }
+
     for (const provider of config.priority) {
         if (provider === 'ollama' && !ollama) continue;
 
@@ -180,11 +194,20 @@ Rules:
 
             console.log(`RAW ${provider.toUpperCase()} INTENT OUTPUT:`, jsonString);
 
-            // Robust JSON extraction
-            const match = jsonString.match(/\{[\s\S]*\}/);
-            const cleaned = match ? match[0] : jsonString;
-
             const parsed = JSON.parse(cleaned);
+
+            // Clean up direct_answer if it's a stringified JSON (common in local models)
+            if (parsed.direct_answer && typeof parsed.direct_answer === 'string') {
+                try {
+                    const nested = JSON.parse(parsed.direct_answer);
+                    if (nested.message) parsed.direct_answer = nested.message;
+                    else if (nested.response) parsed.direct_answer = nested.response;
+                    else if (nested.answer) parsed.direct_answer = nested.answer;
+                } catch (e) {
+                    // Not a JSON string, keep as is
+                }
+            }
+
             console.log(`PARSED ${provider.toUpperCase()} INTENT:`, parsed);
             return parsed;
         } catch (error) {
