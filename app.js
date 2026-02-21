@@ -506,8 +506,15 @@ app.message(async ({ message, say, client, logger }) => {
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
     // Skip if it's a known greeting to avoid unnecessary KB/AI processing
-    const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening'];
-    if (greetings.includes(cleanedText.toLowerCase())) {
+    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)(\s+.*)?$/i.test(cleanedText);
+    if (isGreeting) {
+        console.log(`ℹ️ Ignoring proactive greeting in channel: "${cleanedText}"`);
+        return;
+    }
+
+    // Special check: ignore very short messages in channels unless mentioned
+    if (cleanedText.length < 3) {
+        console.log(`ℹ️ Ignoring very short message in channel: "${cleanedText}"`);
         return;
     }
 

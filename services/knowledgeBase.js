@@ -72,15 +72,20 @@ const findArticle = (issueTypeOrQuery) => {
         article.keywords.forEach(keyword => {
             const kw = keyword.toLowerCase();
 
-            // Exact full phrase match (highest weight)
-            if (query.includes(kw)) score += 10;
-            // Only match keyword as substring if query is long enough (prevents "hi" -> "high cpu")
-            if (query.length >= 4 && kw.includes(query)) score += 5;
-
-            // Word-by-word matching for shorthand (e.g., "syn" -> "syncing")
-            queryWords.forEach(word => {
-                if (kw.includes(word)) score += 2;
-            });
+            // 1. Exact full phrase match (highest weight)
+            if (query === kw) {
+                score += 15;
+            }
+            // 2. Query contains keyword (e.g. "my net is slow" contains "net")
+            // Only if keyword is 3+ chars to avoid matching "i" or "ai" accidentally
+            else if (query.includes(kw) && kw.length >= 3) {
+                score += 10;
+            }
+            // 3. Keyword contains query (e.g. "syncing" contains "syn")
+            // Only if query is 3+ chars to avoid "hi" -> "high cpu"
+            else if (kw.includes(query) && query.length >= 3) {
+                score += 5;
+            }
         });
 
         // Title matching bonus
