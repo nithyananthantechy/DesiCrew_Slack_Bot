@@ -1,0 +1,36 @@
+{
+    "issue_type": "network",
+    "title": "Network Speed & Latency Issues",
+    "description": "Troubleshoot slow internet, buffering, and high ping during calls/tasks.",
+    "keywords": [
+        "speed issue",
+        "slow internet",
+        "buffering",
+        "high ping",
+        "network slowness",
+        "slow download",
+        "vOiP lag"
+    ],
+    "steps": [
+        {
+            "title": "Run a Speed Test",
+            "instruction": "Go to Speedtest.net. If your speed is below 5Mbps, it may be a local signal issue or ISP throttling."
+        },
+        {
+            "title": "Close High-Bandwidth Apps",
+            "instruction": "Close YouTube, Netflix, Spotify, or large downloads in the background that compete for bandwidth."
+        },
+        {
+            "title": "Disconnect From VPN",
+            "instruction": "If you are using a corporate VPN, disconnect to see if speed improves. VPNs often add significant latency."
+        },
+        {
+            "title": "Check Wifi Signal Strength",
+            "instruction": "Move closer to the router. Thick walls or interference from appliances can drastically reduce wifi speeds."
+        },
+        {
+            "title": "Update Network Driver",
+            "instruction": "Go to Device Manager → Network Adapters → Right-click your Wifi/Ethernet card → Update driver."
+        }
+    ]
+}

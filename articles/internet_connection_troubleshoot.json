@@ -1,0 +1,36 @@
+{
+    "issue_type": "network",
+    "title": "Internet Connection Troubleshoot",
+    "description": "Fix 'No Internet Access', wifi disconnected, and general connectivity failures.",
+    "keywords": [
+        "internet issue",
+        "no internet",
+        "not connected to internet",
+        "wifi not working",
+        "internet not work",
+        "limited connectivity",
+        "no ping"
+    ],
+    "steps": [
+        {
+            "title": "Check Physical Connection",
+            "instruction": "If on Ethernet, replug the cable. If on Wifi, toggle it Off and On. Ensure Airplane mode is Disabled."
+        },
+        {
+            "title": "Restart Your Device",
+            "instruction": "Restart your computer/laptop. This clears the network stack and resolves 80% of transient connection bugs."
+        },
+        {
+            "title": "Renew IP Address",
+            "instruction": "Open CMD/Terminal. Type 'ipconfig /release' then 'ipconfig /renew'. This forces your router to assign a new local IP."
+        },
+        {
+            "title": "Flush DNS Cache",
+            "instruction": "Open CMD/Terminal as Admin. Type 'ipconfig /flushdns'. This clears corrupted website address records."
+        },
+        {
+            "title": "Check Proxy Settings",
+            "instruction": "Search for 'Proxy Settings' in Windows/Mac. Ensure 'Use a proxy server' is OFF unless specifically required by your IT team."
+        }
+    ]
+}

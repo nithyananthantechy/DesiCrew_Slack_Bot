@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Google Meet Troubleshoot",
+    "description": "Fix microphone, camera, and join issues on Google Meet.",
+    "keywords": [
+        "google meet issue",
+        "meet camera not working",
+        "cannot hear in meet",
+        "mic not working meet",
+        "meet connection failed",
+        "screen share meet"
+    ],
+    "steps": [
+        {
+            "title": "Check Browser Permissions",
+            "instruction": "Click the 'Lock' icon next to meet.google.com in the search bar. Ensure Camera and Microphone are set to 'Allow'."
+        },
+        {
+            "title": "Verify Audio Settings in Meet",
+            "instruction": "In a Meet call: 3 dots → Settings → Audio. Ensure the correct Microphone and Speakers are selected."
+        },
+        {
+            "title": "Test Camera in Another App",
+            "instruction": "Open your computer's 'Camera' app. If it works there but not in Meet, Chrome is being blocked by your Privacy settings."
+        },
+        {
+            "title": "Lower Video Quality",
+            "instruction": "Settings → Video. Change 'Send resolution' and 'Receive resolution' to 360p to improve stability on weak connections."
+        },
+        {
+            "title": "Clear Meet Cache",
+            "instruction": "If Meet won't load, clear data specifically for meet.google.com via Chrome Settings → Privacy → Site Settings."
+        }
+    ]
+}

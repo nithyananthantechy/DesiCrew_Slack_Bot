@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Google Chrome Performance",
+    "description": "Fix Chrome slowness, high memory usage, and unresponsive pages.",
+    "keywords": [
+        "chrome slow",
+        "chrome freezing",
+        "unresponsive page",
+        "browser slowness",
+        "chrome high cpu",
+        "chrome crashing"
+    ],
+    "steps": [
+        {
+            "title": "Hard Reload Page",
+            "instruction": "Press Ctrl + F5 (or Cmd + Shift + R on Mac). This bypasses the cache and reloads all assets from the server."
+        },
+        {
+            "title": "Clear Browser Cache",
+            "instruction": "Go to Chrome Settings (3 dots) → Clear Browsing Data → Select 'Cached images and files' → Clear data."
+        },
+        {
+            "title": "Disable Unused Extensions",
+            "instruction": "Type 'chrome://extensions' in the address bar. Disable any extensions you don't use daily; they can slow down every page."
+        },
+        {
+            "title": "Use Chrome Task Manager",
+            "instruction": "Press Shift + Esc while in Chrome. Identify which specific tab or extension is consuming the most RAM/CPU and end it."
+        },
+        {
+            "title": "Reset Chrome Settings",
+            "instruction": "Settings → Reset settings → Restore settings to their original defaults. This fixes deep misconfigurations."
+        }
+    ]
+}

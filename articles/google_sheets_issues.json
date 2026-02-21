@@ -1,0 +1,34 @@
+{
+    "issue_type": "software",
+    "title": "Google Sheets Performance",
+    "description": "Fix slow loading, freezing, and calculation errors in Google Sheets.",
+    "keywords": [
+        "google sheets slow",
+        "sheets freezing",
+        "google sheets not loading",
+        "slow calculation",
+        "sheets unresponsive"
+    ],
+    "steps": [
+        {
+            "title": "Turn Off Hardware Acceleration",
+            "instruction": "Chrome Settings → System → Disable 'Use hardware acceleration when available'. This often fixes lagging in large spreadsheets."
+        },
+        {
+            "title": "Remove Unnecessary Formulas",
+            "instruction": "Simplify complex ARRAYFORMULAs or VLOOKUPs that span entire columns. Large datasets calculate much faster with limited ranges."
+        },
+        {
+            "title": "Enable Offline Access",
+            "instruction": "In Google Drive Settings, enable 'Offline' mode. This allows Sheets to keep working during minor internet flickers."
+        },
+        {
+            "title": "Copy to New Spreadsheet",
+            "instruction": "If a specific file is extremely slow, File → Make a copy. This often cleans up hidden version history bloat."
+        },
+        {
+            "title": "Check for Large Styles/Formatting",
+            "instruction": "Select unused rows/columns and Delete them. Conditional formatting over thousands of cells can cause severe lag."
+        }
+    ]
+}
