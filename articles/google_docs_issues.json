@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Google Docs Collaborative Editing",
+    "description": "Fix lagging while typing, 'Trying to reconnect' banners, and formatting bugs.",
+    "keywords": [
+        "google docs slow",
+        "docs lagging",
+        "trying to reconnect docs",
+        "docs formatting issue",
+        "collaborative editing lag",
+        "docs not saving"
+    ],
+    "steps": [
+        {
+            "title": "Check Reconnection Banner",
+            "instruction": "If you see 'Trying to reconnect', stop typing immediately. Your changes are NOT being saved. Wait for the signal to return."
+        },
+        {
+            "title": "Disable Ad-Blockers",
+            "instruction": "Ad-blockers often mistake Google Docs scripts for trackers. Disable them for drive.google.com and docs.google.com."
+        },
+        {
+            "title": "Limit Number of Collaborators",
+            "instruction": "If 50+ people are in one doc, it will lag. Ask others to close the tab if they aren't actively editing."
+        },
+        {
+            "title": "Clear Document Version History",
+            "instruction": "Large docs with thousands of edits get slow. File → Make a copy to start a fresh file without the massive edit history."
+        },
+        {
+            "title": "Update Chrome Browser",
+            "instruction": "Docs uses the latest web engines. Ensure Chrome is up to date via 'Help → About Google Chrome'."
+        }
+    ]
+}

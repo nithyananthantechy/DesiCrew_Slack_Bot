@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Gmail Loading & Attachment Fix",
+    "description": "Fix Gmail slowness, 'Still working...' messages, and attachment download failures.",
+    "keywords": [
+        "gmail slow",
+        "gmail not loading",
+        "attachment won't open",
+        "cannot send email gmail",
+        "gmail still working",
+        "gmail connection error"
+    ],
+    "steps": [
+        {
+            "title": "Load Basic HTML Version",
+            "instruction": "If Gmail is stuck, click 'Load basic HTML' at the bottom right during the loading screen. This helps on very slow networks."
+        },
+        {
+            "title": "Disable Gmail Labs/Add-ons",
+            "instruction": "Open Gmail with 'https://mail.google.com/mail/?labs=0' to see if a third-party add-on is crashing the interface."
+        },
+        {
+            "title": "Check Attachment Type",
+            "instruction": "Gmail blocks certain executable files (.exe, .zip with scripts). Ensure the file isn't on the 'blocked types' list or use Google Drive to share it."
+        },
+        {
+            "title": "Clear Browser Data",
+            "instruction": "Settings → Privacy and Security → Clear browsing data → select 'Cookies and other site data' specifically for google.com."
+        },
+        {
+            "title": "Incognito Test",
+            "instruction": "Open Gmail in an Incognito window (Ctrl+Shift+N). If it works there, one of your browser extensions is interfering."
+        }
+    ]
+}

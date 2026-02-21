@@ -1,0 +1,34 @@
+{
+    "issue_type": "software",
+    "title": "Chrome Profile & Launch Fix",
+    "description": "Fix Chrome not opening, profile error messages, and 'Aw, Snap!' crashes.",
+    "keywords": [
+        "chrome won't open",
+        "chrome profile error",
+        "aw snap chrome",
+        "chrome keep crashing",
+        "profile corrupted chrome"
+    ],
+    "steps": [
+        {
+            "title": "Kill Zombie Processes",
+            "instruction": "Task Manager (Ctrl+Shift+Esc) → End all 'Google Chrome' processes. Sometimes a hidden process prevents a new window from opening."
+        },
+        {
+            "title": "Create New Profile",
+            "instruction": "Click Profile Icon in Chrome (top right) → Add. If the new profile works perfectly, your old profile data is corrupted."
+        },
+        {
+            "title": "Rename Default User Folder",
+            "instruction": "Close Chrome. Navigate to '%LOCALAPPDATA%\\Google\\Chrome\\User Data'. Rename 'Default' to 'Backup Default' and restart Chrome."
+        },
+        {
+            "title": "Disable Sandbox (Last Resort)",
+            "instruction": "Only for isolation testing: Create Chrome shortcut → Properties → Target → add ' --no-sandbox' at the end. Use this ONLY to diagnose."
+        },
+        {
+            "title": "Run Chrome Cleanup Tool",
+            "instruction": "Go to settings 'chrome://settings/cleanup'. Chrome will scan for harmful software that might be hijacking your browser."
+        }
+    ]
+}

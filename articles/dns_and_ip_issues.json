@@ -1,0 +1,35 @@
+{
+    "issue_type": "network",
+    "title": "DNS & Website Access Issues",
+    "description": "Fix 'This site can't be reached', DNS_PROBE_FINISHED, and server IP errors.",
+    "keywords": [
+        "dns probe finished",
+        "site cannot be reached",
+        "server ip address not found",
+        "dns failure",
+        "cannot open any website",
+        "err_connection_refused"
+    ],
+    "steps": [
+        {
+            "title": "Check with another Browser",
+            "instruction": "Try opening the site in Edge or Firefox. If it works there, the issue is your Chrome cache, not the network."
+        },
+        {
+            "title": "Change DNS to Google",
+            "instruction": "Network Settings → IPv4 Properties → Use following DNS: 8.8.8.8 and 8.8.4.4. This bypasses slow/broken ISP DNS servers."
+        },
+        {
+            "title": "Reset TCP/IP Stack",
+            "instruction": "CMD as Admin → 'netsh int ip reset'. This resets your computer's internal map of how it talks to the internet."
+        },
+        {
+            "title": "Check Hosts File",
+            "instruction": "Navigate to 'C:\\Windows\\System32\\drivers\\etc'. Open 'hosts' with Notepad. Ensure there are no entries blocking your work websites."
+        },
+        {
+            "title": "Disable IPv6",
+            "instruction": "Network Adapter Properties → Uncheck 'Internet Protocol Version 6 (TCP/IPv6)'. Some older routers struggle with IPv6 assignments."
+        }
+    ]
+}

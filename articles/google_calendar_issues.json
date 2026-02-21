@@ -1,0 +1,34 @@
+{
+    "issue_type": "software",
+    "title": "Google Calendar Sync",
+    "description": "Fix events not appearing on mobile, missing notifications, and shared calendar errors.",
+    "keywords": [
+        "calendar not syncing",
+        "google calendar mobile missing",
+        "no calendar notification",
+        "shared calendar not showing",
+        "cannot see meeting invite"
+    ],
+    "steps": [
+        {
+            "title": "Enable Sync in Settings",
+            "instruction": "On Mobile: Open Google Calendar app → Settings → Tap the account → Ensure 'Sync' is toggled ON."
+        },
+        {
+            "title": "Check 'Other Calendars'",
+            "instruction": "In web browser: Check the sidebar. Ensure the checkbox for the specific shared calendar is checked/active."
+        },
+        {
+            "title": "Refresh Calendar Browser",
+            "instruction": "Simply press F5. Calendar uses background push; if your tab has been open for days, it may lose its connection to the server."
+        },
+        {
+            "title": "Verify Time Zone",
+            "instruction": "Calendar Settings → General → Time Zone. If your PC and Calendar time zones mismatch, notifications will fire at the wrong time."
+        },
+        {
+            "title": "Clear Calendar Storage (Android)",
+            "instruction": "Phone Settings → Apps → Calendar → Storage → Clear Data. This forces a full re-sync from Google servers."
+        }
+    ]
+}

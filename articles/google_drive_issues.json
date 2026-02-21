@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Google Drive Sync & Access",
+    "description": "Fix files not syncing, access denied errors, and 'Waiting to upload' messages.",
+    "keywords": [
+        "google drive sync",
+        "drive not syncing",
+        "file access denied drive",
+        "waiting to upload",
+        "shared drive missing",
+        "google drive error"
+    ],
+    "steps": [
+        {
+            "title": "Restart Google Drive App",
+            "instruction": "Click the Drive icon in System Tray (Windows) or Menu Bar (Mac) → Settings (cogwheel) → Quit. Then restart the app from your Applications/Start menu."
+        },
+        {
+            "title": "Check Storage Quota",
+            "instruction": "Go to drive.google.com/settings/storage. If your storage is full, syncing will stop until you delete files or upgrade."
+        },
+        {
+            "title": "Disconnect/Reconnect Account",
+            "instruction": "Drive Settings → Preferences → Settings (cogwheel) → Disconnect Account. Then sign in again. This forces a metadata refresh."
+        },
+        {
+            "title": "Check File Permissions",
+            "instruction": "If you can't see a file, ask the owner to check 'Share' settings. Ensure your email is added with 'Editor' or 'Viewer' rights."
+        },
+        {
+            "title": "Clear Office Plugin Cache",
+            "instruction": "If using Drive for Desktop with Excel/Word: Clear the local cache in Drive Settings → Advanced → 'Local cached files'."
+        }
+    ]
+}
