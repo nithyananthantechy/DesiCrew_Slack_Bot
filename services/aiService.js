@@ -143,9 +143,10 @@ Rules:
             console.log(`Trying ${provider} for intent detection...`);
             let jsonString;
 
-            // Add timeout for intent detection
+            // Longer timeout for Ollama (30s), shorter for Cloud (5s) to avoid lag
+            const timeoutDuration = provider === 'ollama' ? 30000 : 8000;
             const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error(`${provider} Timeout`)), 10000)
+                setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration)
             );
 
             if (provider === 'gemini' && geminiModel) {
@@ -158,11 +159,16 @@ Rules:
                 const client = provider === 'openai' ? openai : ollama;
                 const model = provider === 'openai' ? config.openai.model : config.ollama.model;
 
+                // Optimized prompt for Ollama to speed up generation
+                const finalPrompt = provider === 'ollama'
+                    ? `[INST] Analyze: "${userMessage}". JSON ONLY: {"action":"troubleshoot/create_ticket/answer/quick_ticket","issue_type":"...","needs_troubleshooting":true/false,"direct_answer":"..."} [/INST]`
+                    : prompt;
+
                 const completion = await Promise.race([
                     client.chat.completions.create({
                         messages: [
                             { role: "system", content: "You are a helpful IT assistant. JSON ONLY." },
-                            { role: "user", content: prompt }
+                            { role: "user", content: finalPrompt }
                         ],
                         model: model,
                         response_format: provider === 'openai' ? { type: "json_object" } : undefined
