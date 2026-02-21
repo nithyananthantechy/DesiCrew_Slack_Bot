@@ -532,9 +532,15 @@ app.message(async ({ message, say, client, logger }) => {
     }
 
     // Knowledge Base Check
-    const articleMatch = knowledgeBase.findArticle(cleanedText);
+    // Skip for "new" or "request" to allow AI to handle them as tickets
+    const shouldSkipKB = cleanedText.toLowerCase().includes('new') ||
+        cleanedText.toLowerCase().includes('request') ||
+        cleanedText.toLowerCase().includes('ticket') ||
+        cleanedText.toLowerCase().includes('raise');
+
+    const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
-        console.log(`⚡ Proactive KB match: ${articleMatch.title}`);
+        console.log(`✅ Proactive KB match: ${articleMatch.title}`);
         return await processMessage(cleanedText, userId, channelId, say, client, logger);
     }
 

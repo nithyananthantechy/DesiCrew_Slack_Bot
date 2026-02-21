@@ -108,30 +108,50 @@ Rules:
     for (const provider of config.priority) {
         try {
             let jsonString;
-            const timeoutDuration = provider === 'ollama' ? 30000 : 10000;
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration)
-            );
+            let timeoutId;
+            const timeoutDuration = provider === 'ollama' ? 30000 : 15000;
+            const timeoutPromise = new Promise((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration);
+            });
 
-            if (provider === 'ollama' && ollama) {
-                const completion = await Promise.race([
-                    ollama.chat.completions.create({
-                        messages: [
-                            { role: "system", content: "You are an IT helpdesk bot. JSON ONLY." },
-                            { role: "user", content: `[INST] Analyze: "${userMessage}". JSON ONLY. [/INST]` }
-                        ],
-                        model: config.ollama.model
-                    }),
-                    timeoutPromise
-                ]);
-                jsonString = completion.choices[0].message.content;
-            } else if (provider === 'gemini' && geminiModel) {
-                const result = await Promise.race([
-                    geminiModel.generateContent(prompt),
-                    timeoutPromise
-                ]);
-                jsonString = result.response.text();
-            } else continue;
+            try {
+                if (provider === 'ollama' && ollama) {
+                    const completion = await Promise.race([
+                        ollama.chat.completions.create({
+                            messages: [
+                                { role: "system", content: "You are an IT helpdesk bot. JSON ONLY." },
+                                { role: "user", content: `[INST] Analyze: "${userMessage}". JSON ONLY. [/INST]` }
+                            ],
+                            model: config.ollama.model
+                        }),
+                        timeoutPromise
+                    ]);
+                    jsonString = completion.choices[0].message.content;
+                } else if (provider === 'openai' && openai) {
+                    const completion = await Promise.race([
+                        openai.chat.completions.create({
+                            messages: [
+                                { role: "system", content: "You are an IT helpdesk bot. JSON ONLY." },
+                                { role: "user", content: prompt }
+                            ],
+                            model: config.openai.model
+                        }),
+                        timeoutPromise
+                    ]);
+                    jsonString = completion.choices[0].message.content;
+                } else if (provider === 'gemini' && geminiModel) {
+                    const result = await Promise.race([
+                        geminiModel.generateContent(prompt),
+                        timeoutPromise
+                    ]);
+                    jsonString = result.response.text();
+                } else {
+                    clearTimeout(timeoutId);
+                    continue;
+                }
+            } finally {
+                clearTimeout(timeoutId);
+            }
 
             const match = jsonString.match(/\{[\s\S]*\}/);
             if (!match) throw new Error("No JSON found in response");
