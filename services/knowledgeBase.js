@@ -90,11 +90,12 @@ const findArticle = (issueTypeOrQuery) => {
 
         // 4. Title similarity matching (High priority)
         const lowerTitle = article.title.toLowerCase();
-        // Exact title match or query is exactly the title
-        if (query === lowerTitle) score += 20;
-        // Query contains title or title contains query (e.g. "keyboard" -> "Keyboard Issues")
-        else if (lowerTitle.includes(query) && query.length >= 4) score += 12;
-        else if (query.includes(lowerTitle) && lowerTitle.length >= 4) score += 12;
+        const titleWords = lowerTitle.split(/\s+/).filter(w => w.length > 2);
+
+        // Match if query is the title or contains the title's main words
+        if (query === lowerTitle) score += 25;
+        else if (titleWords.some(w => query.includes(w))) score += 15;
+        else if (queryWords.some(w => lowerTitle.includes(w))) score += 12;
 
         return { article, score };
     });

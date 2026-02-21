@@ -520,20 +520,8 @@ app.message(async ({ message, say, client, logger }) => {
     const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)$/i.test(cleanedText.toLowerCase());
 
     if (isGreeting) {
-        try {
-            const channelInfo = await client.conversations.info({ channel: channelId });
-            const chName = (channelInfo.channel.name || "").toLowerCase();
-            const isHelpChannel = chName.includes('help') || chName.includes('desk') || chName.includes('it-');
-
-            if (isHelpChannel) {
-                console.log(`⚡ Greeting detected in help channel: "${cleanedText}". Responding.`);
-                return await processMessage(cleanedText, userId, channelId, say, client, logger);
-            }
-        } catch (err) {
-            console.error("Error checking channel info:", err);
-        }
-        console.log(`ℹ️ Social cue detected in regular channel: "${cleanedText}". Ignoring.`);
-        return;
+        console.log(`⚡ Greeting detected: "${cleanedText}". Responding instantly.`);
+        return await processMessage(cleanedText, userId, channelId, say, client, logger);
     }
 
     // Knowledge Base Check
