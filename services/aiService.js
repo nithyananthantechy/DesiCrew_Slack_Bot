@@ -194,6 +194,10 @@ Rules:
 
             console.log(`RAW ${provider.toUpperCase()} INTENT OUTPUT:`, jsonString);
 
+            // Robust JSON extraction
+            const match = jsonString.match(/\{[\s\S]*\}/);
+            const cleaned = match ? match[0] : jsonString;
+
             const parsed = JSON.parse(cleaned);
 
             // Clean up direct_answer if it's a stringified JSON (common in local models)
