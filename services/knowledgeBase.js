@@ -88,8 +88,13 @@ const findArticle = (issueTypeOrQuery) => {
             }
         });
 
-        // Title matching bonus
-        if (article.title && query.includes(article.title.toLowerCase())) score += 8;
+        // 4. Title similarity matching (High priority)
+        const lowerTitle = article.title.toLowerCase();
+        // Exact title match or query is exactly the title
+        if (query === lowerTitle) score += 20;
+        // Query contains title or title contains query (e.g. "keyboard" -> "Keyboard Issues")
+        else if (lowerTitle.includes(query) && query.length >= 4) score += 12;
+        else if (query.includes(lowerTitle) && lowerTitle.length >= 4) score += 12;
 
         return { article, score };
     });
