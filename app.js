@@ -144,6 +144,26 @@ async function processMessage(text, userId, channelId, say, client, logger) {
             return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
         }
 
+        // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
+        console.log(`🔍 Checking Knowledge Base for instant match: "${text}"`);
+        const article = knowledgeBase.findArticle(text);
+        if (article && article.steps && article.steps.length > 0) {
+            console.log(`✅ Instant KB Match found: ${article.title}`);
+            conversationManager.updateConversationState(userId, {
+                step: 1,
+                currentArticle: article,
+                ticketCreated: false,
+                attempts: 0
+            });
+
+            const firstStep = article.steps[0];
+            await smartSay({
+                text: `I can help with that! Let's troubleshoot this.`,
+                blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, article.steps.length, article.id)
+            });
+            return;
+        }
+
         // 1. Detect Intent
         const intent = await aiService.detectIntent(text);
         logProcess(`Intent detected: ${JSON.stringify(intent)}`);
@@ -196,12 +216,8 @@ async function processMessage(text, userId, channelId, say, client, logger) {
             let article = null;
 
             try {
-                // Step 1: Try to find article by user's actual question text (keyword matching)
-                console.log(`🔍 Step 1: Searching by user text: "${text}"`);
-                article = knowledgeBase.findArticle(text);
-
-                // Step 2: If not found, try by issue_type from AI
-                if (!article && intent.issue_type) {
+                // Step 1: SEARCH BY ISSUE TYPE FROM AI (Original text check already done at top)
+                if (intent.issue_type) {
                     console.log(`🔍 Step 2: Searching by issue_type: "${intent.issue_type}"`);
                     article = knowledgeBase.findArticle(intent.issue_type);
                 }
