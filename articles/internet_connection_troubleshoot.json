@@ -4,10 +4,15 @@
     "description": "Fix 'No Internet Access', wifi disconnected, and general connectivity failures.",
     "keywords": [
         "internet issue",
+        "net issue",
+        "net slow",
+        "internet slow",
         "no internet",
+        "no net",
         "not connected to internet",
         "wifi not working",
         "internet not work",
+        "net not working",
         "limited connectivity",
         "no ping"
     ],
