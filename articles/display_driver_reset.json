@@ -1,0 +1,35 @@
+{
+    "issue_type": "hardware",
+    "title": "Display Driver Crash (TDR)",
+    "description": "Fix 'Display driver stopped responding and has recovered' and TDR timeout errors.",
+    "keywords": [
+        "display driver crash",
+        "nvlddmkm error",
+        "tdr timeout",
+        "driver reset",
+        "screen blackout",
+        "gpu driver recovery"
+    ],
+    "steps": [
+        {
+            "title": "DDU Clean Reinstall",
+            "instruction": "Use 'Display Driver Uninstaller' (DDU) in Safe Mode to completely wipe old drivers before installing fresh ones."
+        },
+        {
+            "title": "Adjust Power Target",
+            "instruction": "In NVIDIA Control Panel → Manage 3D Settings → Power management mode → Set to 'Prefer maximum performance'."
+        },
+        {
+            "title": "Lower GPU Clock Speed",
+            "instruction": "If the factory overclock is unstable, use MSI Afterburner to reduce the Core Clock by -50MHz to improve stability."
+        },
+        {
+            "title": "Check PCIe Cables",
+            "instruction": "Ensure all 8-pin/6-pin power connectors are fully clicked into the GPU. Loose power causes driver resets under load."
+        },
+        {
+            "title": "Hardware Acceleration Scan",
+            "instruction": "Disable 'Hardware Acceleration' in Chrome/Discord/Teams if they are open during crashes to rule out app conflicts."
+        }
+    ]
+}

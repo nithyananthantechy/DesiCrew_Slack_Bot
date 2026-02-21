@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "Unexpected Reboot or Shutdown",
+    "description": "Troubleshoot sudden auto-restarts and unexpected computer shutdowns.",
+    "keywords": [
+        "unexpected reboot",
+        "auto restart",
+        "sudden shutdown",
+        "pc turns off by itself",
+        "rebooting during load",
+        "windows restart loop"
+    ],
+    "steps": [
+        {
+            "title": "Disable Auto-Restart",
+            "instruction": "Right-click 'This PC' → Properties → Advanced System Settings → Startup and Recovery → Uncheck 'Automatically restart'. This reveals the error code instead of rebooting."
+        },
+        {
+            "title": "Check Power Settings",
+            "instruction": "Control Panel → Power Options → Change plan settings → Advanced → Processor power management → Set Max to 99% to prevent thermal spikes."
+        },
+        {
+            "title": "Verify PSU Connectivity",
+            "instruction": "Ensure the power cable is firmly seated in the wall and the PC. Use a UPS if your local power is unstable."
+        },
+        {
+            "title": "Check CPU Temperature",
+            "instruction": "Use 'Open Hardware Monitor'. If CPU exceeds 90°C, the system will shut down to prevent permanent damage."
+        },
+        {
+            "title": "Update BIOS/Firmware",
+            "instruction": "Check the manufacturer website for BIOS updates. Firmware fixes often address power delivery and stability bugs."
+        }
+    ]
+}

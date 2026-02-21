@@ -1,0 +1,35 @@
+{
+    "issue_type": "hardware",
+    "title": "White Screen or No Display",
+    "description": "Fix white/blank screens or missing display output on Windows systems.",
+    "keywords": [
+        "white screen",
+        "white display",
+        "blank screen",
+        "no display output",
+        "screen blank after launch",
+        "monitor no signal"
+    ],
+    "steps": [
+        {
+            "title": "Hardware Toggle",
+            "instruction": "Turn the monitor off and on. If using a laptop, use the Fn keys (like Fn+F4) to toggle display output modes."
+        },
+        {
+            "title": "Disconnect Peripherals",
+            "instruction": "Unplug all USB devices except mouse/keyboard and restart. A faulty USB device can cause BIOS/Display hangs."
+        },
+        {
+            "title": "Safe Mode Boot",
+            "instruction": "Restart and force-shutdown 3 times to enter Automatic Repair → Advanced options → Startup Settings → Safe Mode."
+        },
+        {
+            "title": "Check Graphics Output",
+            "instruction": "If using a Desktop, ensure the monitor is plugged into the GPU ports, NOT the motherboard ports."
+        },
+        {
+            "title": "Reset Monitor Settings",
+            "instruction": "Use the physical buttons on the monitor to perform a 'Factory Reset' or change the 'Input Source' manually."
+        }
+    ]
+}

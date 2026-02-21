@@ -1,0 +1,35 @@
+{
+    "issue_type": "system_issues",
+    "title": "System Freeze & Hang Fix",
+    "description": "Resolve Windows unresponsiveness, UI hangs, and computer freezing during tasks.",
+    "keywords": [
+        "system freeze",
+        "windows hang",
+        "ui not responding",
+        "computer frozen",
+        "mouse won't move",
+        "keyboard frozen"
+    ],
+    "steps": [
+        {
+            "title": "Hard Restart",
+            "instruction": "If completely frozen, hold the physical Power Button for 10 seconds to force a shutdown, then restart."
+        },
+        {
+            "title": "Check for Disk Heavy Load",
+            "instruction": "A freezing UI is often caused by 100% Disk usage. Check Task Manager → Performance → Disk 0 (C:)."
+        },
+        {
+            "title": "Disable Background Apps",
+            "instruction": "Settings → Privacy → Background apps. Turn off apps that aren't needed to free up system interrupts."
+        },
+        {
+            "title": "Run DISM Tool",
+            "instruction": "CMD as Admin → 'dism /online /cleanup-image /restorehealth'. This fixes deep system file corruption."
+        },
+        {
+            "title": "Check for Malware",
+            "instruction": "Run a full scan with Windows Defender. Some malware consumes 100% resources causing frequent hangs."
+        }
+    ]
+}

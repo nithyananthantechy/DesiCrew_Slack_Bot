@@ -1,0 +1,35 @@
+{
+    "issue_type": "hardware",
+    "title": "Windows Black Screen Issues",
+    "description": "Fix black screen on login, after GPU tasks, or during display initialization.",
+    "keywords": [
+        "black screen",
+        "no display black",
+        "black screen after login",
+        "monitor turns black",
+        "display blackout",
+        "gpu initialization black screen"
+    ],
+    "steps": [
+        {
+            "title": "Wake Up Display",
+            "instruction": "Press 'Win+Ctrl+Shift+B'. This resets the graphics driver and can often clear a black screen instantly."
+        },
+        {
+            "title": "Check Video Cables",
+            "instruction": "Unplug and firmly replug your HDMI/DisplayPort cable. Try a different port on the GPU if available."
+        },
+        {
+            "title": "Restart Windows Explorer",
+            "instruction": "If you can see the mouse, press Ctrl+Shift+Esc → File → Run new task → type 'explorer.exe' → Enter."
+        },
+        {
+            "title": "Boot in Low Resolution",
+            "instruction": "Restart → F8 (Advanced Boot) → Enable Low-Resolution Video. This bypasses high-refresh rate errors."
+        },
+        {
+            "title": "Disable Fast Startup",
+            "instruction": "Control Panel → Power Options → Choose what power buttons do → Uncheck 'Turn on fast startup'. This fixes many black screen login issues."
+        }
+    ]
+}
