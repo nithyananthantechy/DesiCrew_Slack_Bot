@@ -40,6 +40,9 @@ const fallbackDetectIntent = (text) => {
     if (lowerText.includes('password reset')) {
         return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
     }
+    if (lowerText.includes('new biometric') || lowerText.includes('request biometric') || lowerText.includes('biometric access')) {
+        return { issue_type: "biometric", action: "quick_ticket", needs_troubleshooting: false };
+    }
 
     // Troubleshooting logic
     const isTrouble = lowerText.includes('issue') || lowerText.includes('problem') || lowerText.includes('error') ||
@@ -95,10 +98,10 @@ Provide JSON ONLY:
   "action": "create_ticket/troubleshoot/answer/quick_ticket/null"
 }
 Rules:
-- If user mentions "domain lock" or "password reset" specifically, action="quick_ticket".
+- If user mentions "domain lock", "password reset", or "new biometric access" specifically, action="quick_ticket".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
-- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "mouse".
-- If user describes a problem (like "net issue" or "mouse issue"), action="troubleshoot" and needs_troubleshooting=true.
+- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "mouse", "bio" -> "biometric".
+- If user describes a problem (like "net issue" or "biometric not working"), action="troubleshoot" and needs_troubleshooting=true.
 - If the user is asking "who are you", explain you are an IT Helpdesk Bot.
 `;
 

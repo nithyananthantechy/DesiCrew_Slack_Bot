@@ -186,9 +186,10 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 }
             });
 
-            const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' : 'Password Reset';
+            const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' :
+                ticketType === 'password_reset' ? 'Password Reset' : 'Biometric Access';
             await smartSay({
-                text: `I'll help you raise a ${ticketTypeName} ticket. Please provide your **Employee ID**:`
+                text: `I'll help you raise a ${ticketTypeName} request. Please provide your **Employee ID**:`
             });
             return;
         }
@@ -401,8 +402,9 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
         // Format subject based on ticket type
         let ticketSubject;
         if (data.isQuickTicket) {
-            // Quick tickets: "Domain Lock - EMP123" or "Password Reset - EMP123"
-            const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' : 'Password Reset';
+            // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", or "Biometric Access - EMP123"
+            const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' :
+                data.type === 'password_reset' ? 'Password Reset' : 'Biometric Access';
             ticketSubject = `${ticketTypeName} - ${data.empId}`;
         } else {
             // Regular tickets: Keep existing format
