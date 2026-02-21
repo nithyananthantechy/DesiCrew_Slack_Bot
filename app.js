@@ -461,10 +461,20 @@ app.event('app_home_opened', async ({ event, client, logger }) => {
 
 // Helper to clean mentions and check if bot was tagged
 function getMessageInfo(text) {
-    if (!botUserId) return { text, isMentioned: false };
+    if (!text) return { cleanedText: "", isMentioned: false };
+
+    // Clean Slack HTML entities (e.g., &gt; for >)
+    let processedText = text.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+
+    // Remove Slack blockquote prefix "> " if present
+    processedText = processedText.replace(/^>\s*/, '');
+
+    if (!botUserId) return { cleanedText: processedText.trim(), isMentioned: false };
+
     const botMentionRegex = new RegExp(`<@${botUserId}>`, 'g');
-    const isMentioned = botMentionRegex.test(text);
-    const cleanedText = text.replace(botMentionRegex, '').trim();
+    const isMentioned = botMentionRegex.test(processedText);
+    const cleanedText = processedText.replace(botMentionRegex, '').trim();
+
     return { cleanedText, isMentioned };
 }
 
@@ -506,7 +516,8 @@ app.message(async ({ message, say, client, logger }) => {
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
     // BUT in dedicated helpdesk channels, we might want to be more friendly.
-    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)$/i.test(cleanedText);
+    // Enhanced greeting regex to handle "hi" even with some noise
+    const isGreeting = /^(hi|hello|hey|yo|morning|afternoon|evening|hola)$/i.test(cleanedText.toLowerCase());
 
     if (isGreeting) {
         try {
