@@ -1,0 +1,35 @@
+{
+    "issue_type": "network",
+    "title": "AI Dataset & Model Download Issues",
+    "description": "Troubleshoot network slowness and failures when downloading large AI models or datasets.",
+    "keywords": [
+        "model download failed",
+        "dataset download slow",
+        "network slowness ai",
+        "ollama pull failed",
+        "huggingface download error",
+        "connection timeout ai"
+    ],
+    "steps": [
+        {
+            "title": "Check Global Proxy / VPN",
+            "instruction": "Disable company VPN or check proxy settings in your terminal (HTTP_PROXY/HTTPS_PROXY). Large downloads often fail over restrictive VPNs."
+        },
+        {
+            "title": "Use Local Mirrors",
+            "instruction": "If downloading from HuggingFace or similar, check if your organization has a local Artifactory mirror or cache."
+        },
+        {
+            "title": "Resume Download with CLI",
+            "instruction": "Use 'wget -c' or 'curl -C -' to resume interrupted downloads instead of starting from scratch."
+        },
+        {
+            "title": "Check DNS Stability",
+            "instruction": "Switch to a stable DNS (like 8.8.8.8) if the model provider's domain is failing to resolve intermittently."
+        },
+        {
+            "title": "Verify Disk Space for Extraction",
+            "instruction": "Ensure you have 2x the model size in free space. Downloads often fail during the extraction/unzipping phase due to low space."
+        }
+    ]
+}

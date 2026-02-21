@@ -15,14 +15,21 @@ const MAPPING_FILE = path.join(__dirname, '../data/ticket_user_mappings.json');
 const loadMappings = async () => {
     try {
         if (await fs.pathExists(MAPPING_FILE)) {
-            const data = await fs.readJson(MAPPING_FILE);
-            Object.keys(data).forEach(ticketId => {
-                ticketCache.set(ticketId, data[ticketId]);
-            });
-            console.log(`✅ Loaded ${Object.keys(data).length} ticket-user mappings from file`);
+            const content = await fs.readFile(MAPPING_FILE, 'utf8');
+            if (content && content.trim().length > 0) {
+                const data = JSON.parse(content);
+                Object.keys(data).forEach(ticketId => {
+                    ticketCache.set(ticketId, data[ticketId]);
+                });
+                console.log(`✅ Loaded ${Object.keys(data).length} ticket-user mappings from file`);
+            } else {
+                console.log("ℹ️ Mapping file is empty. Starting fresh.");
+            }
         }
     } catch (error) {
-        console.error("Error loading ticket mappings:", error);
+        console.error("Error loading ticket mappings (attempting reset):", error);
+        // If file is corrupted, start fresh
+        try { await fs.writeJson(MAPPING_FILE, {}, { spaces: 2 }); } catch (e) { }
     }
 };
 
