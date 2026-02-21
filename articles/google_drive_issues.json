@@ -1,10 +1,15 @@
 {
-    "issue_type": "software",
+    "issue_type": "google_drive",
     "title": "Google Drive Sync & Access",
     "description": "Fix files not syncing, access denied errors, and 'Waiting to upload' messages.",
     "keywords": [
         "google drive sync",
         "drive not syncing",
+        "syn",
+        "sync",
+        "syncing",
+        "gdrive",
+        "drive not working",
         "file access denied drive",
         "waiting to upload",
         "shared drive missing",

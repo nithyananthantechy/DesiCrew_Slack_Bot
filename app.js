@@ -193,6 +193,11 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
             return;
         }
 
+        if (intent.action === 'answer' && intent.direct_answer) {
+            await smartSay({ text: intent.direct_answer });
+            return;
+        }
+
         if (isTicketRequest) {
             // Initiate data gathering flow instead of immediate creation
             conversationManager.updateConversationState(userId, {
