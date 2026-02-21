@@ -1,0 +1,35 @@
+{
+    "issue_type": "performance",
+    "title": "AI Disk & Storage Performance",
+    "description": "Optimize dataset I/O and resolve low disk space issues hindering AI training.",
+    "keywords": [
+        "disk i/o slow",
+        "low disk space ai",
+        "dataset read performance",
+        "training bottleneck",
+        "out of disk space",
+        "i/o performance issue"
+    ],
+    "steps": [
+        {
+            "title": "Clean Temp Files",
+            "instruction": "Run 'Disk Cleanup' or delete %TEMP% folder contents. AI frameworks create large temp files that can fill the drive."
+        },
+        {
+            "title": "Use SSD for Datasets",
+            "instruction": "Move datasets to an NVMe or SATA SSD. Training from a mechanical HDD causes significant I/O wait times."
+        },
+        {
+            "title": "Optimize Data Loading",
+            "instruction": "Increase 'num_workers' in your DataLoader to parallelize data reading, or use compressed formats like LMDB/HDF5."
+        },
+        {
+            "title": "Check Disk Health",
+            "instruction": "Run 'chkdsk /f' or use CrystalDiskInfo. A failing drive will drop in speed significantly under high read/write load."
+        },
+        {
+            "title": "Monitor I/O Queue",
+            "instruction": "Resource Monitor → Disk tab → Check 'Active Time' and 'Disk Queue Length'. High queue length indicates an I/O bottleneck."
+        }
+    ]
+}

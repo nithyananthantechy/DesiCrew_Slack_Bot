@@ -1,0 +1,36 @@
+{
+    "issue_type": "hardware",
+    "title": "GPU & CUDA Driver Issues",
+    "description": "Fix GPU detection, CUDA compatibility, and driver crashes during AI workloads.",
+    "keywords": [
+        "gpu not detected",
+        "cuda error",
+        "nvidia driver crash",
+        "gpu driver timeout",
+        "tdr error",
+        "cuda compatibility",
+        "gpu utilization"
+    ],
+    "steps": [
+        {
+            "title": "Verify GPU Detection",
+            "instruction": "Run 'nvidia-smi' in Command Prompt. If it fails, the driver is not installed or the GPU is not recognized."
+        },
+        {
+            "title": "Update NVIDIA Drivers",
+            "instruction": "Download latest Studio or Game Ready drivers from NVIDIA. Enterprise users should use 'Studio' drivers for better stability."
+        },
+        {
+            "title": "Check CUDA Toolkit Version",
+            "instruction": "Run 'nvcc --version'. Ensure your PyTorch/TensorFlow version supports the installed CUDA version."
+        },
+        {
+            "title": "Increase TDR Delay",
+            "instruction": "Registry Editor → HKLM\\System\\CurrentControlSet\\Control\\GraphicsDrivers. Add 'TdrDelay' (DWORD) set to 60. This prevents Windows from resetting the driver during long AI tasks."
+        },
+        {
+            "title": "Verify Library Path",
+            "instruction": "Ensure CUDA_PATH and PATH environment variables include the bin/lib directories of your CUDA installation."
+        }
+    ]
+}

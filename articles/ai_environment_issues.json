@@ -1,0 +1,36 @@
+{
+    "issue_type": "software",
+    "title": "AI Environment & Dependency Conflicts",
+    "description": "Resolve Python environment, library mismatch, and missing dependency errors.",
+    "keywords": [
+        "python environment conflict",
+        "dependency mismatch",
+        "missing library",
+        "virtual env error",
+        "pip install failed",
+        "conda environment",
+        "ai training failure"
+    ],
+    "steps": [
+        {
+            "title": "Isolate with Virtual Environments",
+            "instruction": "Always use 'python -m venv venv' or Conda. Never install AI libraries globally to avoid version conflicts."
+        },
+        {
+            "title": "Verify Library Versions",
+            "instruction": "Run 'pip list' or 'conda list'. Check if versions of torch, torchvision, or tensorflow match the requirements."
+        },
+        {
+            "title": "Reinstall Broken Dependencies",
+            "instruction": "Use 'pip install --force-reinstall <package_name>' to fix corrupted index or missing shared objects (.so/.dll)."
+        },
+        {
+            "title": "Check Compiler Dependencies",
+            "instruction": "Ensure 'Build Tools for Visual Studio' is installed if you are compiling custom CUDA kernels or installing C++ based libraries."
+        },
+        {
+            "title": "Clean Pip/Conda Cache",
+            "instruction": "Run 'pip cache purge' or 'conda clean --all' to remove corrupted download files preventing fresh installs."
+        }
+    ]
+}

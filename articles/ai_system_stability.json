@@ -1,0 +1,36 @@
+{
+    "issue_type": "bluescreen",
+    "title": "AI Workload System Stability",
+    "description": "Troubleshoot BSOD, Black Screens, and unexpected reboots during heavy compute tasks.",
+    "keywords": [
+        "bsod during training",
+        "blue screen ai",
+        "system crash heavy load",
+        "unexpected reboot",
+        "black screen gpu",
+        "windows auto-restart",
+        "system hang"
+    ],
+    "steps": [
+        {
+            "title": "Check Event Viewer",
+            "instruction": "Run 'eventvwr.msc' → Windows Logs → System. Look for 'Critical' errors like 'Kernel-Power' or 'Display driver nvlddmkm stopped responding'."
+        },
+        {
+            "title": "Disable Overclocking",
+            "instruction": "Reset BIOS settings to default and disable GPU overclocking (MSI Afterburner/EVGA Precision). AI workloads are extremely sensitive to instability."
+        },
+        {
+            "title": "Verify Power Supply",
+            "instruction": "Ensure your PSU has enough wattage for peak CPU+GPU load. High compute tasks can cause voltage drops and reboots."
+        },
+        {
+            "title": "Test RAM Stability",
+            "instruction": "Run 'Windows Memory Diagnostic' or MemTest86. Defective RAM often causes crashes only under high usage."
+        },
+        {
+            "title": "Limit Resource Usage",
+            "instruction": "Use 'cpulimit' or set power limits in NVIDIA Control Panel to reduce peak draw and improve thermal stability."
+        }
+    ]
+}

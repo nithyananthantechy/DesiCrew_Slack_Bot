@@ -1,0 +1,36 @@
+{
+    "issue_type": "performance",
+    "title": "AI Training Performance Degradation",
+    "description": "Troubleshoot high CPU/Memory usage and system unresponsiveness during AI model training.",
+    "keywords": [
+        "ai training slow",
+        "high cpu usage",
+        "high memory usage",
+        "system unresponsiveness",
+        "performance degradation",
+        "ai model training",
+        "windows freezing"
+    ],
+    "steps": [
+        {
+            "title": "Monitor Resource Usage",
+            "instruction": "Open Task Manager (Ctrl+Shift+Esc) → Performance tab. Identify if CPU, RAM, or Disk is hitting 100%."
+        },
+        {
+            "title": "Adjust Batch Size",
+            "instruction": "Reduce the batch size in your training script (e.g., from 32 to 16 or 8). This significantly lowers memory pressure."
+        },
+        {
+            "title": "Enable Gradient Accumulation",
+            "instruction": "If memory is the bottleneck, use gradient accumulation to maintain a large 'effective' batch size while using less VRAM/RAM."
+        },
+        {
+            "title": "Set Process Priority",
+            "instruction": "Task Manager → Details → Right-click python.exe → Set Priority → Below Normal. This keeps the Windows UI responsive."
+        },
+        {
+            "title": "Check Thermal Throttling",
+            "instruction": "Use a tool like HWMonitor to check temperatures. High heat causes the system to slow down to protect hardware."
+        }
+    ]
+}
