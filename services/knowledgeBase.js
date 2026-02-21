@@ -51,15 +51,11 @@ const loadArticles = async () => {
     }
 };
 
-/**
- * Find relevant article for a given issue type or query
- * @param {string} issueTypeOrQuery - Issue type or user's question text
- * @returns {object|null}
- */
 const findArticle = (issueTypeOrQuery) => {
     if (!issueTypeOrQuery) return null;
 
-    const query = issueTypeOrQuery.toLowerCase();
+    const query = issueTypeOrQuery.toLowerCase().trim();
+    const queryWords = query.split(/\s+/).filter(w => w.length > 2); // Only care about 3+ char words for fuzzy
 
     // 1. Try exact issue_type match first
     const exactMatch = articlesCache.find(a => a.issue_type === issueTypeOrQuery);
@@ -68,40 +64,40 @@ const findArticle = (issueTypeOrQuery) => {
         return exactMatch;
     }
 
-    // 2. Try keyword matching - search for articles where keywords appear in query
-    const keywordMatches = articlesCache.filter(article => {
-        if (!article.keywords || article.keywords.length === 0) return false;
+    // 2. Scored Keyword Matching
+    const scoredMatches = articlesCache.map(article => {
+        if (!article.keywords || article.keywords.length === 0) return { article, score: 0 };
 
-        // Check if any keyword appears in the user's query
-        return article.keywords.some(keyword =>
-            query.includes(keyword.toLowerCase())
-        );
-    });
+        let score = 0;
+        article.keywords.forEach(keyword => {
+            const kw = keyword.toLowerCase();
 
-    if (keywordMatches.length > 0) {
-        // Return the article with most keyword matches
-        const scored = keywordMatches.map(article => {
-            const matchCount = article.keywords.filter(keyword =>
-                query.includes(keyword.toLowerCase())
-            ).length;
-            return { article, matchCount };
+            // Exact full phrase match (highest weight)
+            if (query.includes(kw)) score += 10;
+            if (kw.includes(query)) score += 5;
+
+            // Word-by-word matching for shorthand (e.g., "syn" -> "syncing")
+            queryWords.forEach(word => {
+                if (kw.includes(word)) score += 2;
+            });
         });
 
-        scored.sort((a, b) => b.matchCount - a.matchCount);
-        console.log(`✅ Found keyword match: ${scored[0].article.title} (${scored[0].matchCount} keywords matched)`);
-        return scored[0].article;
+        // Title matching bonus
+        if (article.title && query.includes(article.title.toLowerCase())) score += 8;
+
+        return { article, score };
+    });
+
+    const bestMatch = scoredMatches
+        .filter(m => m.score > 0)
+        .sort((a, b) => b.score - a.score)[0];
+
+    if (bestMatch && bestMatch.score >= 5) {
+        console.log(`✅ Found match: ${bestMatch.article.title} (Score: ${bestMatch.score})`);
+        return bestMatch.article;
     }
 
-    // 3. Try title matching
-    const titleMatch = articlesCache.find(a =>
-        a.title && query.includes(a.title.toLowerCase())
-    );
-    if (titleMatch) {
-        console.log(`✅ Found title match: ${titleMatch.title}`);
-        return titleMatch;
-    }
-
-    console.log(`ℹ️ No article found for: "${issueTypeOrQuery}"`);
+    console.log(`ℹ️ No article found for query: "${issueTypeOrQuery}"`);
     return null;
 };
 

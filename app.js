@@ -68,7 +68,7 @@ const logProcess = (msg) => {
 /**
  * Shared message processing logic for DMs and Channel Mentions
  */
-async function processMessage(text, userId, channelId, say, client, logger) {
+async function processMessage(text, userId, channelId, say, client, logger, cachedIntent = null) {
     // Helper for channel-aware responses
     const isDM = channelId.startsWith('D'); // DMs usually start with D, but using channel_type is better if available.
     // However, channelId is passed from app_mention (C...) or app.message (D...).
@@ -164,8 +164,8 @@ async function processMessage(text, userId, channelId, say, client, logger) {
             return;
         }
 
-        // 1. Detect Intent
-        const intent = await aiService.detectIntent(text);
+        // 1. Detect Intent (skip if passed from proactive check)
+        const intent = cachedIntent || await aiService.detectIntent(text);
         logProcess(`Intent detected: ${JSON.stringify(intent)}`);
 
         // 2. Handle specific actions
@@ -499,12 +499,23 @@ app.message(async ({ message, say, client, logger }) => {
         return await processMessage(cleanedText, userId, channelId, say, client, logger);
     }
 
-    // Proactive Support
+    // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
+    // BUT we should check Knowledge Base FIRST for a match to be instant!
+    const articleMatch = knowledgeBase.findArticle(cleanedText);
+    if (articleMatch) {
+        console.log(`⚡ Proactive KB match found for "${cleanedText}", bypassing AI.`);
+        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+    }
+
+    // Proactive Support AI check (only if no KB match)
     try {
         const intent = await aiService.detectIntent(cleanedText);
         logProcess(`Proactive intent check for "${cleanedText}": ${JSON.stringify(intent)}`);
+
+        // If it's an IT issue, process it
         if (intent.action === 'troubleshoot' || intent.action === 'create_ticket' || intent.action === 'quick_ticket' || intent.needs_troubleshooting || (intent.action === 'answer' && intent.direct_answer)) {
-            return await processMessage(cleanedText, userId, channelId, say, client, logger);
+            // Pass the intent to processMessage to avoid second call
+            return await processMessage(cleanedText, userId, channelId, say, client, logger, intent);
         }
     } catch (err) {
         console.error("Proactive intent check failed:", err);
