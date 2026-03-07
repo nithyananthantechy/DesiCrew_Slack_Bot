@@ -112,7 +112,8 @@ Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT s
 Rules:
 - If user mentions "domain lock", "password reset", or "new biometric access" specifically, action="quick_ticket".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
-- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "mouse", "bio" -> "biometric".
+- If user provides shorthand issue with a location (e.g., "Keyboard issue, HL, ground floor - Kollu"), action="create_ticket" and issue_type="hardware".
+- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric".
 - If user describes a problem (like "net issue" or "biometric not working"), action="troubleshoot" and needs_troubleshooting=true.
 - If the user is asking "who are you", explain you are an IT Helpdesk Bot.
 `;

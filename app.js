@@ -120,18 +120,53 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
 
             const pendingData = { ...state.pendingTicketData, empId };
 
-            // Check if we also need Hostname (Non-biometric system issues)
-            if (pendingData.type !== 'biometric') {
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_LOCATION',
+                pendingTicketData: pendingData
+            });
+            await smartSay({
+                text: "Got it. What is your current *Location*?"
+            });
+            return;
+        }
+
+        if (state.state === 'AWAITING_LOCATION') {
+            const location = text.trim();
+            logProcess(`Gathered Location: ${location}`);
+
+            const pendingData = { ...state.pendingTicketData, location };
+
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_EMAIL',
+                pendingTicketData: pendingData
+            });
+            await smartSay({
+                text: "Thanks. Please provide your *Mail ID* (Email Address):"
+            });
+            return;
+        }
+
+        if (state.state === 'AWAITING_EMAIL') {
+            const email = text.trim();
+            logProcess(`Gathered Email: ${email}`);
+
+            const pendingData = { ...state.pendingTicketData, email };
+
+            // Only ask for Hostname for system/machine-related issues
+            const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn'];
+            const requiresHostname = systemRelatedTypes.includes(pendingData.type);
+
+            if (requiresHostname) {
                 conversationManager.updateConversationState(userId, {
                     state: 'AWAITING_HOSTNAME',
                     pendingTicketData: pendingData
                 });
                 await smartSay({
-                    text: "Got it. Now, could you please provide your *System Hostname*? \n\n_Tip: To find it, type `hostname` in your terminal/command prompt or check the sticker on your machine._"
+                    text: "Almost done. Could you please provide your *System Hostname*? \n\n_Tip: To find it, type `hostname` in your terminal/command prompt or check the sticker on your machine._"
                 });
                 return;
             } else {
-                // Biometric only needs Emp ID
+                // Non-system issues only need Emp ID, Location, Email
                 return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
             }
         }
@@ -145,9 +180,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
-        // Skip for "new" requests or "tickets" to allow AI to handle them as Quick Tickets
-        const isRequest = text.toLowerCase().includes('new') || text.toLowerCase().includes('request') ||
-            text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise');
+        // Skip for "new" requests, "tickets", or sensitive issues (domain lock/password reset) to allow directly creating tickets
+        const lowerText = text.toLowerCase();
+        const isRequest = lowerText.includes('new') || lowerText.includes('request') ||
+            lowerText.includes('ticket') || lowerText.includes('raise') ||
+            lowerText.includes('domain lock') || lowerText.includes('domainlocked') ||
+            lowerText.includes('password reset');
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -417,6 +455,8 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
         const ticketDescription = `
 User Data:
 - Employee ID: ${data.empId}
+- Location: ${data.location || 'N/A (Quick Ticket)'}
+- Email: ${data.email || 'N/A'}
 - System Hostname: ${data.hostname || 'N/A (Quick Ticket or Biometric Issue)'}
 
 Original Issue:
@@ -426,7 +466,7 @@ ${data.description}
         const ticket = await freshservice.createTicket({
             subject: ticketSubject,
             description: ticketDescription,
-            email: requesterEmail,
+            email: data.email || requesterEmail,
             name: requesterName
         });
 
@@ -536,7 +576,10 @@ app.message(async ({ message, say, client, logger }) => {
     const shouldSkipKB = cleanedText.toLowerCase().includes('new') ||
         cleanedText.toLowerCase().includes('request') ||
         cleanedText.toLowerCase().includes('ticket') ||
-        cleanedText.toLowerCase().includes('raise');
+        cleanedText.toLowerCase().includes('raise') ||
+        cleanedText.toLowerCase().includes('domain lock') ||
+        cleanedText.toLowerCase().includes('domainlocked') ||
+        cleanedText.toLowerCase().includes('password reset');
 
     const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
@@ -748,7 +791,12 @@ webhookApp.post('/freshservice/webhook', async (req, res) => {
             console.log(`🔐 Processing sensitive ticket ${ticketId} of type ${ticketType}`);
 
             // Fetch the latest reply from Freshservice to show user the automation response
-            const latestReply = await freshservice.getLatestTicketReply(ticketId);
+            let latestReply = await freshservice.getLatestTicketReply(ticketId);
+
+            if (!latestReply && latestNote) {
+                console.log(`ℹ️ Falling back to webhook provided latest_note`);
+                latestReply = latestNote;
+            }
 
             if (!latestReply) {
                 console.log(`⚠️ No reply found for sensitive ticket ${ticketId}, skipping notification`);
