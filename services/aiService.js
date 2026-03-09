@@ -97,6 +97,24 @@ const detectIntent = async (userMessage) => {
         };
     }
 
+    // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check
+    if (lowerText.includes('domain lock') || lowerText.includes('domainlocked')) {
+        console.log(`⚡ Fast-path domain lock match: "${lowerText}"`);
+        return {
+            action: "quick_ticket",
+            issue_type: "domain_lock",
+            needs_troubleshooting: false
+        };
+    }
+    if (lowerText.includes('password reset')) {
+        console.log(`⚡ Fast-path password reset match: "${lowerText}"`);
+        return {
+            action: "quick_ticket",
+            issue_type: "password_reset",
+            needs_troubleshooting: false
+        };
+    }
+
     // 2. Full IT Assistant Prompt
     const prompt = `
 You are a concierge IT helpdesk assistant. Analyze: "${userMessage}"
