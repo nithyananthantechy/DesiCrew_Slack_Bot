@@ -192,8 +192,8 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         const lowerText = text.toLowerCase();
         const isRequest = lowerText.includes('new') || lowerText.includes('request') ||
             lowerText.includes('ticket') || lowerText.includes('raise') ||
-            lowerText.includes('domain lock') || lowerText.includes('domainlocked') ||
-            lowerText.includes('password reset');
+            /domain.{0,4}lock|domainlock(ed)?/i.test(lowerText) ||
+            /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(lowerText);
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -585,9 +585,8 @@ app.message(async ({ message, say, client, logger }) => {
         cleanedText.toLowerCase().includes('request') ||
         cleanedText.toLowerCase().includes('ticket') ||
         cleanedText.toLowerCase().includes('raise') ||
-        cleanedText.toLowerCase().includes('domain lock') ||
-        cleanedText.toLowerCase().includes('domainlocked') ||
-        cleanedText.toLowerCase().includes('password reset');
+        /domain.{0,4}lock|domainlock(ed)?/i.test(cleanedText) ||
+        /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(cleanedText);
 
     const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {

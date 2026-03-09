@@ -31,42 +31,83 @@ if (config.ollama.baseUrl) {
 }
 
 const fallbackDetectIntent = (text) => {
-    const lowerText = text.toLowerCase();
+    const lower = text.toLowerCase();
 
-    // Quick Ticket logic
-    if (lowerText.includes('domain lock') || lowerText.includes('domainlocked')) {
+    // --- QUICK TICKET FAST PATH (typo-tolerant) ---
+    if (/domain.{0,4}lock|domainlock(ed)?/i.test(lower)) {
         return { issue_type: "domain_lock", action: "quick_ticket", needs_troubleshooting: false };
     }
-    if (lowerText.includes('password reset')) {
+    if (/pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lower)) {
         return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
     }
-    if (lowerText.includes('new biometric') || lowerText.includes('request biometric') || lowerText.includes('biometric access')) {
+    if (lower.includes('new biometric') || lower.includes('request biometric') || lower.includes('biometric access') || lower.includes('biometric request')) {
         return { issue_type: "biometric", action: "quick_ticket", needs_troubleshooting: false };
     }
 
-    // Troubleshooting logic
-    const isTrouble = lowerText.includes('issue') || lowerText.includes('problem') || lowerText.includes('error') ||
-        lowerText.includes('not working') || lowerText.includes('slow') || lowerText.includes('weird') ||
-        lowerText.includes('help') || lowerText.includes('broken');
-
-    if (isTrouble) {
-        let type = "general";
-        if (lowerText.includes('net') || lowerText.includes('wifi') || lowerText.includes('internet')) type = "network";
-        if (lowerText.includes('mouse') || lowerText.includes('keyboard')) type = "hardware";
-        return { action: "troubleshoot", needs_troubleshooting: true, issue_type: type };
+    // --- TICKET CREATION ---
+    if (lower.includes('raise ticket') || lower.includes('create ticket') || lower.includes('new ticket') || lower.includes('log ticket') || lower.includes('need a ticket') || lower.includes('open ticket')) {
+        return { issue_type: "general", action: "create_ticket", needs_troubleshooting: false };
     }
 
-    // Greeting logic
-    if (lowerText.startsWith('hi') || lowerText.startsWith('hello') || lowerText.startsWith('hey') ||
-        lowerText.startsWith('morning') || lowerText.startsWith('evening')) {
-        // Only if message is short (prevents matching technical issues starting with greeting)
-        if (lowerText.split(/\s+/).length <= 4) {
-            console.log(`⚡ Fallback greeting match: "${lowerText}"`);
-            return { action: "answer", direct_answer: "Hello! I'm your IT Helpdesk Assistant. How can I help you today?", needs_troubleshooting: false };
-        }
+    // --- NETWORK / INTERNET ---
+    if (lower.includes('wifi') || lower.includes('wi-fi') || lower.includes('internet') || lower.includes('network') || lower.includes('no connection') || lower.includes('not connecting') || lower.includes('lan') || lower.includes('ethernet') || lower.includes('net issue') || lower.includes('net problem')) {
+        return { issue_type: "network", action: "troubleshoot", needs_troubleshooting: true };
     }
 
-    return { action: "answer", direct_answer: "I'm here to help with IT issues. What's on your mind?", needs_troubleshooting: false };
+    // --- VPN ---
+    if (lower.includes('vpn') || lower.includes('tunnel') || lower.includes('remote access') || lower.includes('ssl vpn')) {
+        return { issue_type: "vpn", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- PRINTER ---
+    if (lower.includes('printer') || lower.includes('printing') || lower.includes('print queue') || lower.includes('scanner') || lower.includes('scan')) {
+        return { issue_type: "printer", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- HARDWARE (keyboard, mouse, screen, etc.) ---
+    if (lower.includes('keyboard') || lower.includes('mouse') || lower.includes('monitor') || lower.includes('screen') || lower.includes('display') || lower.includes('usb') || lower.includes('charger') || lower.includes('charging') || lower.includes('battery') || lower.includes('hardware') || lower.includes('device') || lower.includes('headset') || lower.includes('headphone') || lower.includes('webcam') || lower.includes('camera') || lower.includes('microphone')) {
+        return { issue_type: "hardware", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- SLOW / PERFORMANCE ---
+    if (lower.includes('slow') || lower.includes('hanging') || lower.includes('freezing') || lower.includes('frozen') || lower.includes('lag') || lower.includes('performance') || lower.includes('unresponsive') || lower.includes('not responding') || lower.includes('high cpu') || lower.includes('ram')) {
+        return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- BLUE SCREEN / CRASH ---
+    if (lower.includes('blue screen') || lower.includes('bsod') || lower.includes('black screen') || lower.includes('crash') || lower.includes('restart') || lower.includes('reboot') || lower.includes('shutdown') || lower.includes('not booting') || lower.includes('won\'t start')) {
+        return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- SOFTWARE / APP ---
+    if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('install') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes('won\'t open')) {
+        return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- EMAIL ---
+    if (lower.includes('email') || lower.includes('mail') || lower.includes('outlook') || lower.includes('gmail') || lower.includes('inbox') || lower.includes('smtp') || lower.includes('calendar') || lower.includes('meeting invite')) {
+        return { issue_type: "email", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- PASSWORD / ACCESS ---
+    if (lower.includes('password') || lower.includes('forgot') || lower.includes('locked out') || lower.includes('login') || lower.includes('cannot login') || lower.includes('access denied') || lower.includes('account')) {
+        return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
+    }
+
+    // --- BIOMETRIC ISSUE ---
+    if (lower.includes('biometric') || lower.includes('fingerprint') || lower.includes('attendance') || lower.includes('punch')) {
+        return { issue_type: "biometric", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- GREETING ---
+    const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening', 'hola'];
+    const words = lower.split(/\s+/);
+    if (greetings.includes(words[0]) && words.length <= 4) {
+        return { action: "answer", direct_answer: "Hello! I'm your IT Helpdesk Assistant. How can I help you today?", needs_troubleshooting: false };
+    }
+
+    // --- GENERAL FALLBACK ---
+    return { action: "troubleshoot", needs_troubleshooting: true, issue_type: "general" };
 };
 
 const detectIntent = async (userMessage) => {
@@ -97,8 +138,9 @@ const detectIntent = async (userMessage) => {
         };
     }
 
-    // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check
-    if (lowerText.includes('domain lock') || lowerText.includes('domainlocked')) {
+    // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check (typo-tolerant using regex)
+    // Covers: "domain lock", "domainlock", "domine lock", "domain lok" etc.
+    if (/domain.{0,4}lock|domainlock(ed)?/i.test(lowerText)) {
         console.log(`⚡ Fast-path domain lock match: "${lowerText}"`);
         return {
             action: "quick_ticket",
@@ -106,7 +148,8 @@ const detectIntent = async (userMessage) => {
             needs_troubleshooting: false
         };
     }
-    if (lowerText.includes('password reset')) {
+    // Covers: "password reset", "pasword reset", "passowrd reset", "reset password", "pwd reset" etc.
+    if (/pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lowerText)) {
         console.log(`⚡ Fast-path password reset match: "${lowerText}"`);
         return {
             action: "quick_ticket",
@@ -140,7 +183,7 @@ Rules:
         try {
             let jsonString;
             let timeoutId;
-            const timeoutDuration = provider === 'ollama' ? 30000 : 15000;
+            const timeoutDuration = provider === 'ollama' ? 5000 : 5000;
             const timeoutPromise = new Promise((_, reject) => {
                 timeoutId = setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration);
             });
