@@ -147,7 +147,15 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
 
         if (state.state === 'AWAITING_EMAIL') {
-            const email = text.trim();
+            // Slack formats typed emails as <mailto:user@domain.com|user@domain.com>
+            let email = text.trim();
+            const emailMatch = email.match(/mailto:[^|]+\|([^>]+)>/);
+            if (emailMatch && emailMatch[1]) {
+                email = emailMatch[1];
+            } else {
+                // Secondary fallback cleanup just in case
+                email = email.replace(/[<>]/g, '').replace('mailto:', '');
+            }
             logProcess(`Gathered Email: ${email}`);
 
             const pendingData = { ...state.pendingTicketData, email };
