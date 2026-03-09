@@ -68,7 +68,7 @@ const logProcess = (msg) => {
 /**
  * Shared message processing logic for DMs and Channel Mentions
  */
-async function processMessage(text, userId, channelId, say, client, logger, cachedIntent = null) {
+async function processMessage(text, userId, channelId, messageTs, say, client, logger, cachedIntent = null) {
     // Helper for channel-aware responses
     const isDM = channelId.startsWith('D'); // DMs usually start with D, but using channel_type is better if available.
     // However, channelId is passed from app_mention (C...) or app.message (D...).
@@ -97,6 +97,21 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
     };
 
+    // Helper to delete the user's message containing sensitive info (only in channels)
+    const deleteUserMessage = async () => {
+        if (!isDM && messageTs) {
+            try {
+                await client.chat.delete({
+                    channel: channelId,
+                    ts: messageTs
+                });
+                logProcess(`Deleted sensitive user message ${messageTs} in channel ${channelId}`);
+            } catch (err) {
+                console.error("Could not delete message (missing permissions or TS):", err.message);
+            }
+        }
+    };
+
     try {
         logProcess(`Processing message from ${userId} in ${channelId}: "${text}"`);
         const state = conversationManager.getConversationState(userId);
@@ -107,16 +122,85 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         if (state.state === 'AWAITING_EMP_ID_QUICK') {
             const empId = text.trim();
             logProcess(`Gathered Employee ID for quick ticket: ${empId}`);
+            await deleteUserMessage();
 
             const pendingData = { ...state.pendingTicketData, empId };
-            // Quick tickets skip hostname, go straight to finalization
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_LOCATION_QUICK',
+                pendingTicketData: pendingData
+            });
+            await smartSay({ text: `🔒 _Securely captured your Employee ID:_ \`${empId}\`\nGot it. What is your current *Location*?` });
+            return;
+        }
+
+        if (state.state === 'AWAITING_LOCATION_QUICK') {
+            const location = text.trim();
+            logProcess(`Gathered Location for quick ticket: ${location}`);
+            await deleteUserMessage();
+
+            const pendingData = { ...state.pendingTicketData, location };
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_EMAIL_QUICK',
+                pendingTicketData: pendingData
+            });
+            await smartSay({ text: `🔒 _Securely captured your Location:_ \`${location}\`\nThanks. Please provide your *Mail ID* (Email Address):` });
+            return;
+        }
+
+        if (state.state === 'AWAITING_EMAIL_QUICK') {
+            // Slack formats typed emails as <mailto:user@domain.com|user@domain.com>
+            let email = text.trim();
+            const emailMatch = email.match(/mailto:[^|]+\|([^>]+)>/);
+            if (emailMatch && emailMatch[1]) {
+                email = emailMatch[1];
+            } else {
+                email = email.replace(/[<>]/g, '').replace('mailto:', '');
+            }
+            logProcess(`Gathered Email for quick ticket: ${email}`);
+            await deleteUserMessage();
+            await smartSay({ text: `🔒 _Securely captured your Email:_ \`${email}\`` });
+
+            const pendingData = { ...state.pendingTicketData, email };
+            // Quick tickets: no hostname needed
             return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
+        }
+
+        // Software Install Approval Confirmation
+        if (state.state === 'AWAITING_INSTALL_APPROVAL') {
+            const lowerReply = text.trim().toLowerCase();
+            const approvedKeywords = ['approved', 'approval', 'got approval', 'i got approval', 'yes', 'confirmed', 'done'];
+            const isApproved = approvedKeywords.some(k => lowerReply.includes(k));
+
+            if (isApproved) {
+                // Show the install article steps now
+                const pendingArticle = state.pendingInstallArticle;
+                conversationManager.clearConversationState(userId);
+                if (pendingArticle && pendingArticle.steps) {
+                    conversationManager.updateConversationState(userId, {
+                        step: 1,
+                        currentArticle: pendingArticle,
+                        ticketCreated: false,
+                        attempts: 0
+                    });
+                    const firstStep = pendingArticle.steps[0];
+                    await smartSay({
+                        text: `✅ Great! IT has approved. Let's get started with the installation.`,
+                        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, pendingArticle.steps.length, pendingArticle.id)
+                    });
+                } else {
+                    await smartSay({ text: "✅ IT approval confirmed! Please follow the installation steps shared by your IT team." });
+                }
+            } else {
+                await smartSay({ text: "Please wait for IT approval before proceeding. Once approved, come back and say *I got approval* to continue." });
+            }
+            return;
         }
 
         // Regular Ticket Flow
         if (state.state === 'AWAITING_EMP_ID') {
             const empId = text.trim();
             logProcess(`Gathered Employee ID: ${empId}`);
+            await deleteUserMessage();
 
             const pendingData = { ...state.pendingTicketData, empId };
 
@@ -125,7 +209,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 pendingTicketData: pendingData
             });
             await smartSay({
-                text: "Got it. What is your current *Location*?"
+                text: `🔒 _Securely captured your Employee ID:_ \`${empId}\`\nGot it. What is your current *Location*?`
             });
             return;
         }
@@ -133,6 +217,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         if (state.state === 'AWAITING_LOCATION') {
             const location = text.trim();
             logProcess(`Gathered Location: ${location}`);
+            await deleteUserMessage();
 
             const pendingData = { ...state.pendingTicketData, location };
 
@@ -141,7 +226,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 pendingTicketData: pendingData
             });
             await smartSay({
-                text: "Thanks. Please provide your *Mail ID* (Email Address):"
+                text: `🔒 _Securely captured your Location:_ \`${location}\`\nThanks. Please provide your *Mail ID* (Email Address):`
             });
             return;
         }
@@ -157,11 +242,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 email = email.replace(/[<>]/g, '').replace('mailto:', '');
             }
             logProcess(`Gathered Email: ${email}`);
+            await deleteUserMessage();
 
             const pendingData = { ...state.pendingTicketData, email };
 
             // Only ask for Hostname for system/machine-related issues
-            const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn'];
+            const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn', 'software_install'];
             const requiresHostname = systemRelatedTypes.includes(pendingData.type);
 
             if (requiresHostname) {
@@ -170,11 +256,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                     pendingTicketData: pendingData
                 });
                 await smartSay({
-                    text: "Almost done. Could you please provide your *System Hostname*? \n\n_Tip: To find it, type `hostname` in your terminal/command prompt or check the sticker on your machine._"
+                    text: `🔒 _Securely captured your Email:_ \`${email}\`\nAlmost done. Could you please provide your *System Hostname*? \n\n_Tip: To find it, type \`hostname\` in your terminal/command prompt or check the sticker on your machine._`
                 });
                 return;
             } else {
                 // Non-system issues only need Emp ID, Location, Email
+                await smartSay({ text: `🔒 _Securely captured your Email:_ \`${email}\`` });
                 return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
             }
         }
@@ -187,16 +274,18 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 rawHostname.includes("serial number") || rawHostname.includes("n/a") || rawHostname === '-';
             const hostname = isUnknown ? 'Unknown (User Not Sure)' : text.trim();
             logProcess(`Gathered Hostname: ${hostname}`);
+            await deleteUserMessage();
+            await smartSay({ text: `🔒 _Securely captured your Hostname:_ \`${hostname}\`` });
 
             const pendingData = { ...state.pendingTicketData, hostname };
             return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
         }
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
-        // Skip for "new" requests, "tickets", or sensitive issues (domain lock/password reset) to allow directly creating tickets
+        // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
         const lowerText = text.toLowerCase();
         const isRequest = lowerText.includes('new') || lowerText.includes('request') ||
-            lowerText.includes('ticket') || lowerText.includes('raise') ||
+            lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('install') ||
             /domain.{0,4}lock|domainlock(ed)?/i.test(lowerText) ||
             /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(lowerText);
 
@@ -227,8 +316,31 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         const isTicketRequest = text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise') || intent.action === 'create_ticket';
 
         if (isQuickTicket) {
-            // Quick ticket flow: Only ask for Employee ID (skip hostname)
-            const ticketType = intent.issue_type; // domain_lock or password_reset
+            const ticketType = intent.issue_type; // domain_lock, password_reset, biometric, software_install
+
+            // Software install: Require full details (EmpID, Location, Email, Hostname) to create an Approval ticket
+            if (ticketType === 'software_install') {
+                const installArticle = knowledgeBase.findArticle(text) || knowledgeBase.findArticleByIssueType('software_install');
+
+                conversationManager.updateConversationState(userId, {
+                    state: 'AWAITING_EMP_ID',
+                    pendingTicketData: {
+                        subject: `Software Installation Approval Required`,
+                        description: `User requested a software installation.\n\nOriginal request: "${text}"`,
+                        type: 'software_install',
+                        originalText: text,
+                        isSoftwareInstall: true,
+                        pendingInstallArticle: installArticle
+                    }
+                });
+
+                await smartSay({
+                    text: `I'll help you request IT Approval for this software installation. First, please provide your **Employee ID**:`
+                });
+                return;
+            }
+
+            // Domain Lock / Password Reset / Biometric: ask for Emp ID, Location, Email
             conversationManager.updateConversationState(userId, {
                 state: 'AWAITING_EMP_ID_QUICK',
                 pendingTicketData: {
@@ -488,14 +600,27 @@ ${data.description}
         ticketUserMap.storeMapping(ticket.id, userId, channelId, data.type || 'general');
 
         // Use say (public) for ticket confirmation so team knows
-        await say({
-            channel: channelId,
-            text: `Support ticket #${ticket.id} created successfully.`,
-            blocks: messageViews.ticketCreated(ticket.id)
-        });
+        if (data.isSoftwareInstall) {
+            // It's a software install approval ticket, so keep conversation alive and wait for approval
+            conversationManager.updateConversationState(userId, {
+                state: 'AWAITING_INSTALL_APPROVAL',
+                pendingInstallArticle: data.pendingInstallArticle
+            });
 
-        // Clear state
-        conversationManager.clearConversationState(userId);
+            await say({
+                channel: channelId,
+                text: `🔐 *IT Approval Required!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Once you receive approval, come back here and say *I got approval* and I'll guide you through the installation steps.`,
+                blocks: messageViews.ticketCreated(ticket.id)
+            });
+        } else {
+            // Standard ticket, clear state
+            await say({
+                channel: channelId,
+                text: `Support ticket #${ticket.id} created successfully.`,
+                blocks: messageViews.ticketCreated(ticket.id)
+            });
+            conversationManager.clearConversationState(userId);
+        }
     } catch (error) {
         console.error("Error finalizing ticket:", error);
         await smartSay("I'm sorry, I encountered an error while finalizing your ticket. Please try again or contact IT support.");
@@ -542,7 +667,7 @@ app.event('app_mention', async ({ event, say, client, logger }) => {
     const { cleanedText } = getMessageInfo(event.text);
     // Add a flag to the event to signal it's handled (useful if combined with message event)
     event.is_handled_as_mention = true;
-    await processMessage(cleanedText, event.user, event.channel, say, client, logger);
+    await processMessage(cleanedText, event.user, event.channel, event.ts, say, client, logger);
 });
 
 // Message Context (DMs and Proactive Channels)
@@ -569,7 +694,7 @@ app.message(async ({ message, say, client, logger }) => {
     // 2. We are already in a conversation (gathering info or troubleshooting)
     // 3. Proactive check (AI thinks it's an IT issue)
     if (isDM || isInConversation) {
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
@@ -601,13 +726,13 @@ app.message(async ({ message, say, client, logger }) => {
 
     // Proactive Support AI check (only if no KB match)
     try {
+        // Then check if it looks like an IT issue (proactive AI detection)
         const intent = await aiService.detectIntent(cleanedText);
-        logProcess(`Proactive intent check for "${cleanedText}": ${JSON.stringify(intent)}`);
+        const isTopicMatch = intent.action === 'troubleshoot' || intent.action === 'quick_ticket' || intent.action === 'create_ticket';
 
-        // If it's an IT issue, process it
-        if (intent.action === 'troubleshoot' || intent.action === 'create_ticket' || intent.action === 'quick_ticket' || intent.needs_troubleshooting || (intent.action === 'answer' && intent.direct_answer)) {
-            // Pass the intent to processMessage to avoid second call
-            return await processMessage(cleanedText, userId, channelId, say, client, logger, intent);
+        if (isTopicMatch) {
+            console.log(`✅ Proactive KB match: ${intent.issue_type} (Action: ${intent.action})`);
+            return await processMessage(cleanedText, userId, channelId, messageTs, say, client, logger, intent);
         }
     } catch (err) {
         console.error("Proactive intent check failed:", err);
