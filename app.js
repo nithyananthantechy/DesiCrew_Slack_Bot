@@ -286,8 +286,8 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         const lowerText = text.toLowerCase();
         const isRequest = lowerText.includes('new') || lowerText.includes('request') ||
             lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('install') ||
-            /domain.{0,4}lock|domainlock(ed)?/i.test(lowerText) ||
-            /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(lowerText);
+            /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account/i.test(lowerText) ||
+            /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lowerText);
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -706,7 +706,7 @@ app.message(async ({ message, say, client, logger }) => {
 
     if (isGreeting) {
         console.log(`⚡ Greeting detected: "${cleanedText}". Responding instantly.`);
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // Knowledge Base Check
@@ -721,7 +721,7 @@ app.message(async ({ message, say, client, logger }) => {
     const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
         console.log(`✅ Proactive KB match: ${articleMatch.title}`);
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // Proactive Support AI check (only if no KB match)
@@ -731,8 +731,8 @@ app.message(async ({ message, say, client, logger }) => {
         const isTopicMatch = intent.action === 'troubleshoot' || intent.action === 'quick_ticket' || intent.action === 'create_ticket';
 
         if (isTopicMatch) {
-            console.log(`✅ Proactive KB match: ${intent.issue_type} (Action: ${intent.action})`);
-            return await processMessage(cleanedText, userId, channelId, messageTs, say, client, logger, intent);
+            console.log(`✅ Proactive AI match: ${intent.issue_type} (Action: ${intent.action})`);
+            return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger, intent);
         }
     } catch (err) {
         console.error("Proactive intent check failed:", err);
