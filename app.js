@@ -180,7 +180,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
 
         if (state.state === 'AWAITING_HOSTNAME') {
-            const hostname = text.trim();
+            const rawHostname = text.trim().toLowerCase();
+            // If user doesn't know, proceed without hostname
+            const isUnknown = rawHostname.includes("don't know") || rawHostname.includes("dont know") ||
+                rawHostname.includes("no idea") || rawHostname.includes("not sure") || rawHostname.includes("unknown") ||
+                rawHostname.includes("serial number") || rawHostname.includes("n/a") || rawHostname === '-';
+            const hostname = isUnknown ? 'Unknown (User Not Sure)' : text.trim();
             logProcess(`Gathered Hostname: ${hostname}`);
 
             const pendingData = { ...state.pendingTicketData, hostname };

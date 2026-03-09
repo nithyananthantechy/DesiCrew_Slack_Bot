@@ -79,8 +79,18 @@ const fallbackDetectIntent = (text) => {
         return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
     }
 
-    // --- SOFTWARE / APP ---
-    if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('install') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes('won\'t open')) {
+    // --- MALWARE / VIRUS ---
+    if (lower.includes('malware') || lower.includes('virus') || lower.includes('infected') || lower.includes('infection') || lower.includes('ransomware') || lower.includes('trojan') || lower.includes('spyware') || lower.includes('threat detected') || lower.includes('antivirus')) {
+        return { issue_type: "malware", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- SOFTWARE INSTALL REQUEST ---
+    if (lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) {
+        return { issue_type: "software_install", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- SOFTWARE / APP ISSUES ---
+    if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes("won't open")) {
         return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
     }
 
