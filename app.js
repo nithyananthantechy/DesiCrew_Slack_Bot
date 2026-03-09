@@ -545,8 +545,8 @@ app.message(async ({ message, say, client, logger }) => {
     logProcess(`app.message triggered! Channel: ${message.channel}, Type: ${message.channel_type}, BotID: ${message.bot_id}`);
     console.log(`DEBUG: app.message triggered! Channel: ${message.channel}, Type: ${message.channel_type}, BotID: ${message.bot_id}`);
 
-    // Ignore bot messages
-    if (message.bot_id) return;
+    // Ignore bot messages and events without a user (e.g. message_deleted)
+    if (message.bot_id || !message.user) return;
 
     // Ignore messages that are handled via app_mention to prevent double-replies
     // Note: Bolt usually triggers both if the bot is mentioned in a channel
