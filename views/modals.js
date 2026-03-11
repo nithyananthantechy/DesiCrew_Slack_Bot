@@ -131,11 +131,11 @@ const collectDetailsModal = (requiresHostname = false) => {
             },
             label: {
                 type: 'plain_text',
-                text: 'System Hostname (e.g. DC5000)'
+                text: 'System Hostname (e.g. DC-KO-UB-RL-001)'
             },
             hint: {
                 type: 'plain_text',
-                text: 'To find your hostname: Open Command Prompt (Windows) and type: hostname  |  On Mac/Linux, open Terminal and type: hostname'
+                text: 'Format: DC-[Location]-[Type]-[Floor]-[Number] | Location codes: KO = Kollumangudi, TN = Tamil Nadu, KA = Karnataka, VO = Voora, etc. | To find it: Open Command Prompt and type: hostname'
             }
         });
     }
