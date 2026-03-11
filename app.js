@@ -612,8 +612,7 @@ ${data.description}
 
             await say({
                 channel: channelId,
-                text: `🔐 *IT Approval Required!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Once you receive approval, come back here and say *I got approval* and I'll guide you through the installation steps.`,
-                blocks: messageViews.ticketCreated(ticket.id)
+                text: `🔐 *IT Approval Required!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Once you receive approval, come back here and say *I got approval* and I'll guide you through the installation steps.`
             });
         } else {
             // Standard ticket, clear state
