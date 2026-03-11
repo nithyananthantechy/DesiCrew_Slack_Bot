@@ -119,36 +119,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         // --- 0. Handle Data Gathering States ---
 
 
-        // Software Install Approval Confirmation
-        if (state.state === 'AWAITING_INSTALL_APPROVAL') {
-            const lowerReply = text.trim().toLowerCase();
-            const approvedKeywords = ['approved', 'approval', 'got approval', 'i got approval', 'yes', 'confirmed', 'done'];
-            const isApproved = approvedKeywords.some(k => lowerReply.includes(k));
 
-            if (isApproved) {
-                // Show the install article steps now
-                const pendingArticle = state.pendingInstallArticle;
-                conversationManager.clearConversationState(userId);
-                if (pendingArticle && pendingArticle.steps) {
-                    conversationManager.updateConversationState(userId, {
-                        step: 1,
-                        currentArticle: pendingArticle,
-                        ticketCreated: false,
-                        attempts: 0
-                    });
-                    const firstStep = pendingArticle.steps[0];
-                    await smartSay({
-                        text: `✅ Great! IT has approved. Let's get started with the installation.`,
-                        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, pendingArticle.steps.length, pendingArticle.id)
-                    });
-                } else {
-                    await smartSay({ text: "✅ IT approval confirmed! Please follow the installation steps shared by your IT team." });
-                }
-            } else {
-                await smartSay({ text: "Please wait for IT approval before proceeding. Once approved, come back and say *I got approval* to continue." });
-            }
-            return;
-        }
 
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
@@ -475,15 +446,12 @@ ${data.description}
 
         // Use say (public) for ticket confirmation so team knows
         if (data.isSoftwareInstall) {
-            // It's a software install approval ticket, so keep conversation alive and wait for approval
-            conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_INSTALL_APPROVAL',
-                pendingInstallArticle: data.pendingInstallArticle
-            });
+            // Software install request -> clear state directly
+            conversationManager.clearConversationState(userId);
 
             await say({
                 channel: channelId,
-                text: `🔐 *IT Approval Required!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Once you receive approval, come back here and say *I got approval* and I'll guide you through the installation steps.`
+                text: `🔐 *Software Installation Request Created!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Our IT team agent will reach out to you; they will install the software for you.`
             });
         } else {
             // Standard ticket, clear state
