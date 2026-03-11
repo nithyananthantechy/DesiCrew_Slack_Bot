@@ -89,7 +89,7 @@ const fallbackDetectIntent = (text) => {
 
     // --- SOFTWARE INSTALL REQUEST ---
     if (lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) {
-        return { issue_type: "software_install", action: "troubleshoot", needs_troubleshooting: true };
+        return { issue_type: "software_install", action: "quick_ticket", needs_troubleshooting: false };
     }
 
     // --- SOFTWARE / APP ISSUES ---
@@ -185,7 +185,7 @@ Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT s
   "action": "create_ticket/troubleshoot/answer/quick_ticket"
 }
 Rules:
-- If user mentions "domain lock", "password reset", or "new biometric access" specifically, action="quick_ticket".
+- If user mentions "domain lock", "password reset", "new biometric access", or "software installation" / "install [software]" specifically, action="quick_ticket".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
 - If user provides shorthand issue with a location (e.g., "Keyboard issue, HL, ground floor - Kollu"), action="create_ticket" and issue_type="hardware".
 - Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric".
