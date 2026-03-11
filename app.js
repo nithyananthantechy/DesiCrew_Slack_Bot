@@ -717,6 +717,7 @@ app.message(async ({ message, say, client, logger }) => {
         cleanedText.toLowerCase().includes('request') ||
         cleanedText.toLowerCase().includes('ticket') ||
         cleanedText.toLowerCase().includes('raise') ||
+        cleanedText.toLowerCase().includes('install') ||
         /domain.{0,4}lock|domainlock(ed)?/i.test(cleanedText) ||
         /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(cleanedText);
 
