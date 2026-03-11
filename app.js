@@ -284,10 +284,13 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
         // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
         const lowerText = text.toLowerCase();
-        const isRequest = lowerText.includes('new') || lowerText.includes('request') ||
+        
+        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lowerText);
+        const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
+        
+        const isRequest = lowerText.includes('new ') || lowerText.includes('request') ||
             lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('install') ||
-            /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account/i.test(lowerText) ||
-            /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lowerText);
+            isDomainLock || isPasswordReset;
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {

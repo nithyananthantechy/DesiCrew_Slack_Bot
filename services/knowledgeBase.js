@@ -123,5 +123,8 @@ const getAllArticles = () => {
 module.exports = {
     loadArticles,
     findArticle,
-    getAllArticles
+    getAllArticles,
+    findArticleByIssueType: (issueType) => {
+        return articlesCache.find(a => a.issue_type === issueType) || null;
+    }
 };

@@ -34,10 +34,13 @@ const fallbackDetectIntent = (text) => {
     const lower = text.toLowerCase();
 
     // --- QUICK TICKET FAST PATH (typo-tolerant) ---
-    if (/domain.{0,4}lock|domainlock(ed)?/i.test(lower)) {
+    const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lower);
+    const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lower);
+
+    if (isDomainLock) {
         return { issue_type: "domain_lock", action: "quick_ticket", needs_troubleshooting: false };
     }
-    if (/pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lower)) {
+    if (isPasswordReset) {
         return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
     }
     if (lower.includes('new biometric') || lower.includes('request biometric') || lower.includes('biometric access') || lower.includes('biometric request')) {
@@ -148,9 +151,11 @@ const detectIntent = async (userMessage) => {
         };
     }
 
-    // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check (typo-tolerant using regex)
-    // Covers: "domain lock", "domainlock", "domine lock", "domain lok" etc.
-    if (/domain.{0,4}lock|domainlock(ed)?/i.test(lowerText)) {
+    // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check (typo-tolerant using expanded regex)
+    const isDomainLockFast = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lowerText);
+    const isPasswordResetFast = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
+
+    if (isDomainLockFast) {
         console.log(`⚡ Fast-path domain lock match: "${lowerText}"`);
         return {
             action: "quick_ticket",
@@ -158,8 +163,7 @@ const detectIntent = async (userMessage) => {
             needs_troubleshooting: false
         };
     }
-    // Covers: "password reset", "pasword reset", "passowrd reset", "reset password", "pwd reset" etc.
-    if (/pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?|pwd.{0,4}reset/i.test(lowerText)) {
+    if (isPasswordResetFast) {
         console.log(`⚡ Fast-path password reset match: "${lowerText}"`);
         return {
             action: "quick_ticket",
