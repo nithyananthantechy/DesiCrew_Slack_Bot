@@ -704,9 +704,9 @@ app.action('open_details_modal', async ({ body, ack, client }) => {
         return;
     }
 
-    // Only ask for Hostname for system/machine-related issues
-    const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn', 'software_install'];
-    const requiresHostname = systemRelatedTypes.includes(state.pendingTicketData.type);
+    // Ask for Hostname for everything EXCEPT identity-only issues like domain lock or password reset
+    const noHostnameTypes = ['domain_lock', 'password_reset'];
+    const requiresHostname = !noHostnameTypes.includes(state.pendingTicketData.type);
 
     try {
         await client.views.open({
