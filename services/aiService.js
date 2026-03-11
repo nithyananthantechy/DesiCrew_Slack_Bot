@@ -52,6 +52,11 @@ const fallbackDetectIntent = (text) => {
         return { issue_type: "general", action: "create_ticket", needs_troubleshooting: false };
     }
 
+    // --- SOFTWARE INSTALL REQUEST ---
+    if (lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) {
+        return { issue_type: "software_install", action: "quick_ticket", needs_troubleshooting: false };
+    }
+
     // --- NETWORK / INTERNET ---
     if (lower.includes('wifi') || lower.includes('wi-fi') || lower.includes('internet') || lower.includes('network') || lower.includes('no connection') || lower.includes('not connecting') || lower.includes('lan') || lower.includes('ethernet') || lower.includes('net issue') || lower.includes('net problem')) {
         return { issue_type: "network", action: "troubleshoot", needs_troubleshooting: true };
@@ -87,10 +92,7 @@ const fallbackDetectIntent = (text) => {
         return { issue_type: "malware", action: "troubleshoot", needs_troubleshooting: true };
     }
 
-    // --- SOFTWARE INSTALL REQUEST ---
-    if (lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) {
-        return { issue_type: "software_install", action: "quick_ticket", needs_troubleshooting: false };
-    }
+
 
     // --- SOFTWARE / APP ISSUES ---
     if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes("won't open")) {
@@ -185,7 +187,8 @@ Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT s
   "action": "create_ticket/troubleshoot/answer/quick_ticket"
 }
 Rules:
-- If user mentions "domain lock", "password reset", "new biometric access", or "software installation" / "install [software]" specifically, action="quick_ticket".
+- HIGHEST PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software".
+- If user mentions "domain lock", "password reset", or "new biometric access", action="quick_ticket".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
 - If user provides shorthand issue with a location (e.g., "Keyboard issue, HL, ground floor - Kollu"), action="create_ticket" and issue_type="hardware".
 - Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric".
