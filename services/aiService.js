@@ -248,6 +248,12 @@ Rules:
             if (!match) throw new Error("No JSON found in response");
 
             const parsed = JSON.parse(match[0]);
+            
+            // Validate required fields
+            if (!parsed.action || !parsed.issue_type) {
+                throw new Error("Parsed JSON is missing required fields (action or issue_type)");
+            }
+
             console.log(`PARSED ${provider.toUpperCase()} INTENT:`, parsed);
             return parsed;
         } catch (e) {
