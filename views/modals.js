@@ -74,4 +74,87 @@ const reportIssueModal = (triggerId, initialDescription = "") => {
     };
 };
 
-module.exports = { reportIssueModal };
+const collectDetailsModal = (requiresHostname = false) => {
+    const blocks = [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: 'Please provide your details below. *This information will be kept private.*'
+            }
+        },
+        {
+            type: 'input',
+            block_id: 'emp_id_block',
+            element: {
+                type: 'plain_text_input',
+                action_id: 'emp_id'
+            },
+            label: {
+                type: 'plain_text',
+                text: 'Employee ID'
+            }
+        },
+        {
+            type: 'input',
+            block_id: 'location_block',
+            element: {
+                type: 'plain_text_input',
+                action_id: 'location'
+            },
+            label: {
+                type: 'plain_text',
+                text: 'Location'
+            }
+        },
+        {
+            type: 'input',
+            block_id: 'email_block',
+            element: {
+                type: 'plain_text_input',
+                action_id: 'email'
+            },
+            label: {
+                type: 'plain_text',
+                text: 'Email Address'
+            }
+        }
+    ];
+
+    if (requiresHostname) {
+        blocks.push({
+            type: 'input',
+            block_id: 'hostname_block',
+            element: {
+                type: 'plain_text_input',
+                action_id: 'hostname'
+            },
+            label: {
+                type: 'plain_text',
+                text: 'System Hostname (e.g. DC5000)'
+            }
+        });
+    }
+
+    return {
+        type: 'modal',
+        callback_id: 'submit_details',
+        // Private metadata allows us to pass custom contextual flags directly to the view submission handler
+        private_metadata: JSON.stringify({ requiresHostname }),
+        title: {
+            type: 'plain_text',
+            text: 'Provide Details'
+        },
+        submit: {
+            type: 'plain_text',
+            text: 'Submit'
+        },
+        close: {
+            type: 'plain_text',
+            text: 'Cancel'
+        },
+        blocks: blocks
+    };
+};
+
+module.exports = { reportIssueModal, collectDetailsModal };

@@ -118,52 +118,6 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
 
         // --- 0. Handle Data Gathering States ---
 
-        // Quick Ticket Flow (Domain Lock, Password Reset) - Only needs Employee ID
-        if (state.state === 'AWAITING_EMP_ID_QUICK') {
-            const empId = text.trim();
-            logProcess(`Gathered Employee ID for quick ticket: ${empId}`);
-            await deleteUserMessage();
-
-            const pendingData = { ...state.pendingTicketData, empId };
-            conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_LOCATION_QUICK',
-                pendingTicketData: pendingData
-            });
-            await smartSay({ text: `🔒 _Securely captured your Employee ID:_ \`${empId}\`\nGot it. What is your current *Location*?` });
-            return;
-        }
-
-        if (state.state === 'AWAITING_LOCATION_QUICK') {
-            const location = text.trim();
-            logProcess(`Gathered Location for quick ticket: ${location}`);
-            await deleteUserMessage();
-
-            const pendingData = { ...state.pendingTicketData, location };
-            conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMAIL_QUICK',
-                pendingTicketData: pendingData
-            });
-            await smartSay({ text: `🔒 _Securely captured your Location:_ \`${location}\`\nThanks. Please provide your *Mail ID* (Email Address):` });
-            return;
-        }
-
-        if (state.state === 'AWAITING_EMAIL_QUICK') {
-            // Slack formats typed emails as <mailto:user@domain.com|user@domain.com>
-            let email = text.trim();
-            const emailMatch = email.match(/mailto:[^|]+\|([^>]+)>/);
-            if (emailMatch && emailMatch[1]) {
-                email = emailMatch[1];
-            } else {
-                email = email.replace(/[<>]/g, '').replace('mailto:', '');
-            }
-            logProcess(`Gathered Email for quick ticket: ${email}`);
-            await deleteUserMessage();
-            await smartSay({ text: `🔒 _Securely captured your Email:_ \`${email}\`` });
-
-            const pendingData = { ...state.pendingTicketData, email };
-            // Quick tickets: no hostname needed
-            return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-        }
 
         // Software Install Approval Confirmation
         if (state.state === 'AWAITING_INSTALL_APPROVAL') {
@@ -196,90 +150,6 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
             return;
         }
 
-        // Regular Ticket Flow
-        if (state.state === 'AWAITING_EMP_ID') {
-            const empId = text.trim();
-            logProcess(`Gathered Employee ID: ${empId}`);
-            await deleteUserMessage();
-
-            const pendingData = { ...state.pendingTicketData, empId };
-
-            conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_LOCATION',
-                pendingTicketData: pendingData
-            });
-            await smartSay({
-                text: `🔒 _Securely captured your Employee ID:_ \`${empId}\`\nGot it. What is your current *Location*?`
-            });
-            return;
-        }
-
-        if (state.state === 'AWAITING_LOCATION') {
-            const location = text.trim();
-            logProcess(`Gathered Location: ${location}`);
-            await deleteUserMessage();
-
-            const pendingData = { ...state.pendingTicketData, location };
-
-            conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMAIL',
-                pendingTicketData: pendingData
-            });
-            await smartSay({
-                text: `🔒 _Securely captured your Location:_ \`${location}\`\nThanks. Please provide your *Mail ID* (Email Address):`
-            });
-            return;
-        }
-
-        if (state.state === 'AWAITING_EMAIL') {
-            // Slack formats typed emails as <mailto:user@domain.com|user@domain.com>
-            let email = text.trim();
-            const emailMatch = email.match(/mailto:[^|]+\|([^>]+)>/);
-            if (emailMatch && emailMatch[1]) {
-                email = emailMatch[1];
-            } else {
-                // Secondary fallback cleanup just in case
-                email = email.replace(/[<>]/g, '').replace('mailto:', '');
-            }
-            logProcess(`Gathered Email: ${email}`);
-            await deleteUserMessage();
-
-            const pendingData = { ...state.pendingTicketData, email };
-
-            // Only ask for Hostname for system/machine-related issues
-            const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn', 'software_install'];
-            const requiresHostname = systemRelatedTypes.includes(pendingData.type);
-
-            if (requiresHostname) {
-                conversationManager.updateConversationState(userId, {
-                    state: 'AWAITING_HOSTNAME',
-                    pendingTicketData: pendingData
-                });
-                await smartSay({
-                    text: `🔒 _Securely captured your Email:_ \`${email}\`\nAlmost done. Could you please provide your *System Hostname*? \n\n_Tip: To find it, type \`hostname\` in your terminal/command prompt or check the sticker on your machine._`
-                });
-                return;
-            } else {
-                // Non-system issues only need Emp ID, Location, Email
-                await smartSay({ text: `🔒 _Securely captured your Email:_ \`${email}\`` });
-                return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-            }
-        }
-
-        if (state.state === 'AWAITING_HOSTNAME') {
-            const rawHostname = text.trim().toLowerCase();
-            // If user doesn't know, proceed without hostname
-            const isUnknown = rawHostname.includes("don't know") || rawHostname.includes("dont know") ||
-                rawHostname.includes("no idea") || rawHostname.includes("not sure") || rawHostname.includes("unknown") ||
-                rawHostname.includes("serial number") || rawHostname.includes("n/a") || rawHostname === '-';
-            const hostname = isUnknown ? 'Unknown (User Not Sure)' : text.trim();
-            logProcess(`Gathered Hostname: ${hostname}`);
-            await deleteUserMessage();
-            await smartSay({ text: `🔒 _Securely captured your Hostname:_ \`${hostname}\`` });
-
-            const pendingData = { ...state.pendingTicketData, hostname };
-            return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-        }
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
         // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
@@ -326,7 +196,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 const installArticle = knowledgeBase.findArticle(text) || knowledgeBase.findArticleByIssueType('software_install');
 
                 conversationManager.updateConversationState(userId, {
-                    state: 'AWAITING_EMP_ID',
+                    state: 'AWAITING_MODAL_DETAILS',
                     pendingTicketData: {
                         subject: `Software Installation Approval Required`,
                         description: `User requested a software installation.\n\nOriginal request: "${text}"`,
@@ -338,14 +208,14 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 });
 
                 await smartSay({
-                    text: `I'll help you request IT Approval for this software installation. First, please provide your **Employee ID**:`
+                    blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval for this software installation.`)
                 });
                 return;
             }
 
             // Domain Lock / Password Reset / Biometric: ask for Emp ID, Location, Email
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID_QUICK',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: '', // Will be formatted in finalizeTicket
                     description: `User request: ${text}`,
@@ -357,8 +227,9 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
 
             const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' :
                 ticketType === 'password_reset' ? 'Password Reset' : 'Biometric Access';
+            
             await smartSay({
-                text: `I'll help you raise a ${ticketTypeName} request. Please provide your **Employee ID**:`
+                blocks: messageViews.requestDetailsButton(`I'll help you raise a ${ticketTypeName} request.`)
             });
             return;
         }
@@ -371,7 +242,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         if (isTicketRequest) {
             // Initiate data gathering flow instead of immediate creation
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: `Support Request: ${intent.issue_type || 'General'}`,
                     description: `User message: ${text}`,
@@ -381,7 +252,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
             });
 
             await smartSay({
-                text: `I'll help you raise a ticket for that. First, could you please provide your **Employee ID**?`
+                blocks: messageViews.requestDetailsButton(`I'll help you raise a ticket for that.`)
             });
             return;
         }
@@ -821,7 +692,7 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
             const reason = attempts >= 5 ? "Reached maximum troubleshooting steps" : "No more steps in guide";
 
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: `Unresolved Issue: ${article.title}`,
                     description: `User attempted troubleshooting for ${article.title} but was not resolved after ${attempts} steps.\n\nSummary: ${reason}`,
@@ -829,7 +700,9 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
                 }
             });
 
-            await say(`It looks like we haven't been able to resolve this yet (${reason}). I'll help you raise a support ticket. First, could you please provide your **Employee ID**?`);
+            await smartSay({
+                blocks: messageViews.requestDetailsButton(`It looks like we haven't been able to resolve this yet (${reason}). I'll help you raise a support ticket.`)
+            });
         }
     } else {
         // Show next step
@@ -840,6 +713,107 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
             text: `Let's try the next step.`,
             blocks: messageViews.troubleshootingStep(nextStep.instruction, nextStepIndex + 1, article.steps.length, article.id)
         });
+    }
+});
+
+// Button: Open Details Modal
+app.action('open_details_modal', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const state = conversationManager.getConversationState(userId);
+
+    if (!state || state.state !== 'AWAITING_MODAL_DETAILS' || !state.pendingTicketData) {
+        try {
+            await client.chat.postEphemeral({
+                channel: channelId,
+                user: userId,
+                text: "Your session has expired or no pending request was found. Please start over."
+            });
+        } catch (e) {
+            console.error("Expired session notify error:", e);
+        }
+        return;
+    }
+
+    // Only ask for Hostname for system/machine-related issues
+    const systemRelatedTypes = ['network', 'printer', 'software', 'hardware', 'vpn', 'software_install'];
+    const requiresHostname = systemRelatedTypes.includes(state.pendingTicketData.type);
+
+    try {
+        await client.views.open({
+            trigger_id: body.trigger_id,
+            view: modalViews.collectDetailsModal(requiresHostname)
+        });
+        
+        // Save channelId explicitly since modal submissions lose channel interaction context
+        conversationManager.updateConversationState(userId, { channelId: channelId });
+    } catch (error) {
+        console.error("Error opening details modal:", error);
+    }
+});
+
+// View Submission: Collect Details Modal
+app.view('submit_details', async ({ body, ack, view, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const state = conversationManager.getConversationState(userId);
+
+    if (!state || !state.pendingTicketData) {
+        return;
+    }
+
+    const values = view.state.values;
+    const empId = values.emp_id_block.emp_id.value;
+    const location = values.location_block.location.value;
+    const email = values.email_block.email.value;
+    
+    let hostname = null;
+    const privateMetadata = JSON.parse(view.private_metadata || "{}");
+    if (privateMetadata.requiresHostname) {
+        const rawHostname = values.hostname_block.hostname.value;
+        const isUnknown = rawHostname.toLowerCase().includes("don't know") || rawHostname.toLowerCase().includes("dont know") ||
+                rawHostname.toLowerCase().includes("no idea") || rawHostname.toLowerCase().includes("not sure") || rawHostname.toLowerCase().includes("unknown") ||
+                rawHostname.toLowerCase().includes("serial number") || rawHostname.toLowerCase().includes("n/a") || rawHostname.trim() === '-';
+        hostname = isUnknown ? 'Unknown (User Not Sure)' : rawHostname.trim();
+    }
+
+    const pendingData = { 
+        ...state.pendingTicketData, 
+        empId, 
+        location, 
+        email 
+    };
+    
+    if (hostname) {
+        pendingData.hostname = hostname;
+    }
+
+    const channelId = state.channelId || userId;
+    const isDM = channelId.startsWith('D');
+    
+    const say = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        return await client.chat.postMessage({ channel: channelId, ...args });
+    };
+
+    const smartSay = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        if (isDM) {
+            return await say(args);
+        } else {
+            return await client.chat.postEphemeral({
+                channel: channelId,
+                user: userId,
+                ...args
+            });
+        }
+    };
+
+    try {
+        await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
+    } catch (error) {
+        console.error("Error in finalizeTicket from modal:", error);
     }
 });
 
