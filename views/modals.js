@@ -132,6 +132,10 @@ const collectDetailsModal = (requiresHostname = false) => {
             label: {
                 type: 'plain_text',
                 text: 'System Hostname (e.g. DC5000)'
+            },
+            hint: {
+                type: 'plain_text',
+                text: 'To find your hostname: Open Command Prompt (Windows) and type: hostname  |  On Mac/Linux, open Terminal and type: hostname'
             }
         });
     }
