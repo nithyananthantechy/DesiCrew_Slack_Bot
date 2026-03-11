@@ -197,7 +197,7 @@ Rules:
         try {
             let jsonString;
             let timeoutId;
-            const timeoutDuration = provider === 'ollama' ? 5000 : 5000;
+            const timeoutDuration = provider === 'ollama' ? 30000 : 5000; // Increased Ollama timeout to 30s
             const timeoutPromise = new Promise((_, reject) => {
                 timeoutId = setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration);
             });
