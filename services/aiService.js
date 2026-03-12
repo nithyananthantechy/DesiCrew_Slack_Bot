@@ -43,8 +43,35 @@ const fallbackDetectIntent = (text) => {
     if (isPasswordReset) {
         return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
     }
-    if (lower.includes('new biometric') || lower.includes('request biometric') || lower.includes('biometric access') || lower.includes('biometric request')) {
+    const isBiometricAccessRequest = lower.includes('new biometric') || lower.includes('request biometric') ||
+        lower.includes('biometric access') || lower.includes('biometric request') ||
+        lower.includes('provide biometric') || lower.includes('grant biometric') ||
+        lower.includes('biometric provision') || /need.{0,10}biometric/i.test(lower);
+    const isBiometricIssue = /biometric.{0,20}(issue|problem|not work|fail|error|trouble)/i.test(lower) ||
+        /biometric.{0,20}(broken|doesn'?t work)/i.test(lower) ||
+        /(issue|problem|trouble).{0,20}biometric/i.test(lower);
+    if (isBiometricAccessRequest && !isBiometricIssue) {
         return { issue_type: "biometric", action: "quick_ticket", needs_troubleshooting: false };
+    }
+
+    // --- SOCIAL MEDIA ACCESS (ticket) vs SOCIAL MEDIA ISSUE (troubleshoot) ---
+    const socialApps = ['whatsapp', 'whats app', 'instagram', 'facebook', 'telegram', 'twitter', 'linkedin', 'social media', 'messenger'];
+    const hasSocialApp = socialApps.some(app => lower.includes(app));
+    if (hasSocialApp) {
+        const isSocialAccessRequest = /need.{0,15}access|request.{0,15}access|provide.{0,15}access|grant.{0,15}access|access.{0,10}(request|need)|want.{0,15}access|enable.{0,15}access/i.test(lower) ||
+            lower.includes('access') || lower.includes('unblock') || lower.includes('enable');
+        const isSocialIssue = /(not work|issue|problem|error|crash|fail|trouble|can'?t open|won'?t open|down|slow|hang|freeze|bug)/i.test(lower);
+        if (isSocialIssue) {
+            return { issue_type: "social_media_issue", action: "troubleshoot", needs_troubleshooting: true };
+        }
+        if (isSocialAccessRequest) {
+            return { issue_type: "social_media_access", action: "quick_ticket", needs_troubleshooting: false };
+        }
+    }
+
+    // --- BIOMETRIC APPROVAL RESPONSE ---
+    if (/i.{0,5}(got|received|have).{0,15}approv/i.test(lower) || /approv(al|ed)/i.test(lower)) {
+        return { action: "answer", direct_answer: "Thank you! Our IT team agent will reach out to you shortly to provide access. Please keep your Employee ID ready.", needs_troubleshooting: false };
     }
 
     // --- TICKET CREATION ---
@@ -109,8 +136,17 @@ const fallbackDetectIntent = (text) => {
         return { issue_type: "password_reset", action: "quick_ticket", needs_troubleshooting: false };
     }
 
-    // --- BIOMETRIC ISSUE ---
+    // --- BIOMETRIC ISSUE (troubleshoot) vs BIOMETRIC ACCESS (ticket) ---
     if (lower.includes('biometric') || lower.includes('fingerprint') || lower.includes('attendance') || lower.includes('punch')) {
+        const isBioRequest = lower.includes('new biometric') || lower.includes('request biometric') ||
+            lower.includes('biometric access') || lower.includes('biometric request') ||
+            lower.includes('provide biometric') || lower.includes('grant biometric') ||
+            /need.{0,10}biometric/i.test(lower);
+        const isBioIssue = /biometric.{0,20}(issue|problem|not work|fail|error)/i.test(lower) ||
+            /(issue|problem|trouble).{0,20}biometric/i.test(lower);
+        if (isBioRequest && !isBioIssue) {
+            return { issue_type: "biometric", action: "quick_ticket", needs_troubleshooting: false };
+        }
         return { issue_type: "biometric", action: "troubleshoot", needs_troubleshooting: true };
     }
 
@@ -141,14 +177,62 @@ const detectIntent = async (userMessage) => {
         };
     }
 
-    // 1.5 FAST BIOMETRIC REQUEST check
+    // 1.5 FAST BIOMETRIC REQUEST check ("provide/grant biometric access" → ticket, "biometric issue" → troubleshoot)
+    const isBiometricIssue = /biometric.{0,20}(issue|problem|not work|fail|error|trouble)/i.test(lowerText) ||
+        /biometric.{0,20}(broken|doesn'?t work)/i.test(lowerText) ||
+        /(issue|problem|trouble).{0,20}biometric/i.test(lowerText);
     const isBiometricRequest = lowerText.includes('new biometric') || lowerText.includes('request biometric') ||
-        lowerText.includes('biometric access') || lowerText.includes('biometric request');
-    if (isBiometricRequest && words.length <= 6) {
-        console.log(`⚡ Fast-path biometric request match: "${lowerText}"`);
+        lowerText.includes('biometric access') || lowerText.includes('biometric request') ||
+        lowerText.includes('provide biometric') || lowerText.includes('grant biometric') ||
+        lowerText.includes('biometric provision') || /need.{0,10}biometric/i.test(lowerText);
+    if (isBiometricRequest && !isBiometricIssue) {
+        console.log(`⚡ Fast-path biometric ACCESS ticket match: "${lowerText}"`);
         return {
             action: "quick_ticket",
             issue_type: "biometric",
+            needs_troubleshooting: false
+        };
+    }
+    if (isBiometricIssue) {
+        console.log(`⚡ Fast-path biometric ISSUE troubleshoot match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "biometric",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.55 FAST SOCIAL MEDIA ACCESS vs ISSUE check
+    const socialApps = ['whatsapp', 'whats app', 'instagram', 'facebook', 'telegram', 'twitter', 'linkedin', 'social media', 'messenger'];
+    const hasSocialApp = socialApps.some(app => lowerText.includes(app));
+    if (hasSocialApp) {
+        const isSocialIssue = /(not work|issue|problem|error|crash|fail|trouble|can'?t open|won'?t open|down|slow|hang|freeze|bug)/i.test(lowerText);
+        const isSocialAccessRequest = /need.{0,15}access|request.{0,15}access|provide.{0,15}access|grant.{0,15}access|want.{0,15}access|enable.{0,15}access/i.test(lowerText) ||
+            lowerText.includes('access') || lowerText.includes('unblock') || lowerText.includes('enable');
+        if (isSocialIssue) {
+            console.log(`⚡ Fast-path social media ISSUE troubleshoot match: "${lowerText}"`);
+            return {
+                action: "troubleshoot",
+                issue_type: "social_media_issue",
+                needs_troubleshooting: true
+            };
+        }
+        if (isSocialAccessRequest) {
+            console.log(`⚡ Fast-path social media ACCESS ticket match: "${lowerText}"`);
+            return {
+                action: "quick_ticket",
+                issue_type: "social_media_access",
+                needs_troubleshooting: false
+            };
+        }
+    }
+
+    // 1.56 FAST BIOMETRIC APPROVAL RESPONSE
+    if (/i.{0,5}(got|received|have).{0,15}approv/i.test(lowerText) || (/approv(al|ed)/i.test(lowerText) && words.length <= 8)) {
+        console.log(`⚡ Fast-path biometric approval response match: "${lowerText}"`);
+        return {
+            action: "answer",
+            direct_answer: "Thank you! Our IT team agent will reach out to you shortly to provide access. Please keep your Employee ID ready.",
             needs_troubleshooting: false
         };
     }
@@ -188,10 +272,12 @@ Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT s
 }
 Rules:
 - HIGHEST PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software".
-- If user mentions "domain lock", "password reset", or "new biometric access", action="quick_ticket".
+- If user mentions "domain lock", "password reset", or wants to "provide/grant/request/get biometric access" (NOT a biometric device problem), action="quick_ticket".
+- If user wants "access to WhatsApp/Instagram/social media" (NOT an app crash/issue), action="quick_ticket" and issue_type="social_media_access".
+- If user says a social media or messaging app "is not working", "crashing", or "has an issue", action="troubleshoot" and issue_type="social_media_issue".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
 - If user provides shorthand issue with a location (e.g., "Keyboard issue, HL, ground floor - Kollu"), action="create_ticket" and issue_type="hardware".
-- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric".
+- Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric", "insta" -> "social_media_issue".
 - If user describes a problem (like "net issue" or "biometric not working"), action="troubleshoot" and needs_troubleshooting=true.
 - If the user is asking "who are you", explain you are an IT Helpdesk Bot.
 `;

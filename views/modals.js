@@ -135,7 +135,7 @@ const collectDetailsModal = (requiresHostname = false) => {
             },
             hint: {
                 type: 'plain_text',
-                text: 'Format: DC-[Location]-[Type]-[Floor]-[Number] | Location codes: KO = Kollumangudi, TN = Tamil Nadu, KA = Karnataka, VO = Voora, etc. | To find it: Open Command Prompt and type: hostname'
+                text: 'Format: DC-[Location]-[Type]-[Floor]-[Number] | Location codes: KO = Kollumangudi, TN = TN Palayam, KA = Kaup, VPM = Villupuram, etc. | To find it: Open Command Prompt and type: hostname'
             }
         });
     }

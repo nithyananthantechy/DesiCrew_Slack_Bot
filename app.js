@@ -129,9 +129,18 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lowerText);
         const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
         
+        const isBiometricAccessRequest = lowerText.includes('provide biometric') || lowerText.includes('grant biometric') ||
+            lowerText.includes('biometric access') || lowerText.includes('biometric request') ||
+            lowerText.includes('new biometric') || /need.{0,10}biometric/i.test(lowerText);
+            
+        const socialApps = ['whatsapp', 'whats app', 'instagram', 'facebook', 'telegram', 'twitter', 'linkedin', 'social media', 'messenger'];
+        const hasSocialApp = socialApps.some(app => lowerText.includes(app));
+        const isSocialAccessRequest = hasSocialApp && (/need.{0,15}access|request.{0,15}access|provide.{0,15}access|grant.{0,15}access|want.{0,15}access|enable.{0,15}access/i.test(lowerText) || 
+            lowerText.includes('access') || lowerText.includes('unblock') || lowerText.includes('enable'));
+
         const isRequest = lowerText.includes('new ') || lowerText.includes('request') ||
             lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('install') ||
-            isDomainLock || isPasswordReset;
+            isDomainLock || isPasswordReset || isBiometricAccessRequest || isSocialAccessRequest;
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -184,7 +193,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 return;
             }
 
-            // Domain Lock / Password Reset / Biometric: ask for Emp ID, Location, Email
+            // Domain Lock / Password Reset / Biometric / Social Media: ask for Emp ID, Location, Email
             conversationManager.updateConversationState(userId, {
                 state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
@@ -197,7 +206,8 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
             });
 
             const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' :
-                ticketType === 'password_reset' ? 'Password Reset' : 'Biometric Access';
+                ticketType === 'password_reset' ? 'Password Reset' : 
+                ticketType === 'biometric' ? 'Biometric Access' : 'Social Media Access';
             
             await smartSay({
                 blocks: messageViews.requestDetailsButton(`I'll help you raise a ${ticketTypeName} request.`)
@@ -413,9 +423,10 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
         // Format subject based on ticket type
         let ticketSubject;
         if (data.isQuickTicket) {
-            // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", or "Biometric Access - EMP123"
+            // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", "Biometric Access - EMP123", or "Social Media Access - EMP123"
             const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' :
-                data.type === 'password_reset' ? 'Password Reset' : 'Biometric Access';
+                data.type === 'password_reset' ? 'Password Reset' : 
+                data.type === 'biometric' ? 'Biometric Access' : 'Social Media Access';
             ticketSubject = `${ticketTypeName} - ${data.empId}`;
         } else {
             // Regular tickets: Keep existing format
