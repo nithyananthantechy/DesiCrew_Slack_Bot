@@ -188,6 +188,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 });
 
                 await smartSay({
+                    text: "I'll help you request IT Approval for this software installation.",
                     blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval for this software installation.`)
                 });
                 return;
@@ -210,6 +211,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 ticketType === 'biometric' ? 'Biometric Access' : 'Social Media Access';
             
             await smartSay({
+                text: `I'll help you raise a ${ticketTypeName} request.`,
                 blocks: messageViews.requestDetailsButton(`I'll help you raise a ${ticketTypeName} request.`)
             });
             return;
@@ -233,6 +235,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
             });
 
             await smartSay({
+                text: "I'll help you raise a ticket for that.",
                 blocks: messageViews.requestDetailsButton(`I'll help you raise a ticket for that.`)
             });
             return;
