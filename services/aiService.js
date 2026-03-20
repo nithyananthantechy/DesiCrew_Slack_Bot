@@ -34,7 +34,7 @@ const fallbackDetectIntent = (text) => {
     const lower = text.toLowerCase();
 
     // --- QUICK TICKET FAST PATH (typo-tolerant) ---
-    const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lower);
+    const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lower);
     const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lower);
 
     if (isDomainLock) {
@@ -122,7 +122,7 @@ const fallbackDetectIntent = (text) => {
 
 
     // --- SOFTWARE / APP ISSUES ---
-    if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes("won't open")) {
+    if (lower.includes('software') || lower.includes('application') || lower.includes('app') || lower.includes('uninstall') || lower.includes('update') || lower.includes('upgrade') || lower.includes('office') || lower.includes('excel') || lower.includes('word') || lower.includes('teams') || lower.includes('zoom') || lower.includes('chrome') || lower.includes('browser') || lower.includes('error') || lower.includes('not working') || lower.includes('not opening') || lower.includes("won't open") || lower.includes('slack')) {
         return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
     }
 
@@ -238,7 +238,7 @@ const detectIntent = async (userMessage) => {
     }
 
     // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check (typo-tolerant using expanded regex)
-    const isDomainLockFast = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lowerText);
+    const isDomainLockFast = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lowerText);
     const isPasswordResetFast = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
 
     if (isDomainLockFast) {
@@ -278,6 +278,7 @@ Rules:
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".
 - If user provides shorthand issue with a location (e.g., "Keyboard issue, HL, ground floor - Kollu"), action="create_ticket" and issue_type="hardware".
 - Shorthand: "net" -> "network", "syn" -> "sync issues", "drive" -> "software", "mouse" -> "hardware", "keyboard" -> "hardware", "bio" -> "biometric", "insta" -> "social_media_issue".
+- For specific app issues (like "Slack login issue", "Teams error"), action="troubleshoot", issue_type="software", needs_troubleshooting=true. Do NOT classify app logins as domain_lock or password_reset.
 - If user describes a problem (like "net issue" or "biometric not working"), action="troubleshoot" and needs_troubleshooting=true.
 - If the user is asking "who are you", explain you are an IT Helpdesk Bot.
 `;
@@ -375,7 +376,7 @@ const generateDynamicSteps = async (issueDescription, forceFallback = false) => 
     for (const provider of config.priority) {
         try {
             let jsonString;
-            const prompt = `Generate 5 structured IT troubleshooting steps for: "${issueDescription}". Return ONLY a JSON array of 5 objects with "title", "actions" (array), and "expected_result".`;
+            const prompt = `Generate 5 structured, basic IT troubleshooting steps for: "${issueDescription}". The steps MUST be extremely simple and easy for a non-technical end-user to follow. Do NOT suggest advanced tools like Event Viewer, BIOS, Registry Editor, or Command Prompt. Focus on safe, standard user actions like restarting the application/computer, checking physical cables, basic settings, or closing heavy apps. Return ONLY a JSON array of 5 objects with "title", "actions" (array), and "expected_result".`;
 
             if (provider === 'ollama' && ollama) {
                 const completion = await ollama.chat.completions.create({

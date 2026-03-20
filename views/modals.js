@@ -74,8 +74,22 @@ const reportIssueModal = (triggerId, initialDescription = "") => {
     };
 };
 
-const collectDetailsModal = (requiresHostname = false) => {
-    const blocks = [
+const collectDetailsModal = (requiresHostname = false, isSoftwareInstall = false) => {
+    const blocks = [];
+
+    if (isSoftwareInstall) {
+        blocks.push({
+            type: 'context',
+            elements: [
+                {
+                    type: 'mrkdwn',
+                    text: '💡 *Note:* If you are using a *personal laptop*, IT approval is not needed. You can close this form and select "Personal Laptop" to get the steps.'
+                }
+            ]
+        });
+    }
+
+    blocks.push(
         {
             type: 'section',
             text: {
@@ -119,7 +133,7 @@ const collectDetailsModal = (requiresHostname = false) => {
                 text: 'Email Address'
             }
         }
-    ];
+    );
 
     if (requiresHostname) {
         blocks.push({

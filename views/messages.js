@@ -123,9 +123,50 @@ const requestDetailsButton = (text) => {
     ];
 };
 
+/**
+ * Selection buttons for Personal vs Company laptop
+ * @param {string} text - Message context
+ */
+const laptopTypeSelection = (text) => {
+    return [
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: text
+            }
+        },
+        {
+            type: "actions",
+            elements: [
+                {
+                    type: "button",
+                    text: {
+                        type: "plain_text",
+                        text: "💻 Personal Laptop",
+                        emoji: true
+                    },
+                    style: "primary",
+                    action_id: "personal_laptop_install"
+                },
+                {
+                    type: "button",
+                    text: {
+                        type: "plain_text",
+                        text: "🏢 Company Laptop",
+                        emoji: true
+                    },
+                    action_id: "company_laptop_install"
+                }
+            ]
+        }
+    ];
+};
+
 module.exports = {
     welcomeMessage,
     troubleshootingStep,
     ticketCreated,
-    requestDetailsButton
+    requestDetailsButton,
+    laptopTypeSelection
 };

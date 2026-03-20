@@ -171,12 +171,12 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         if (isQuickTicket) {
             const ticketType = intent.issue_type; // domain_lock, password_reset, biometric, software_install
 
-            // Software install: Require full details (EmpID, Location, Email, Hostname) to create an Approval ticket
+            // Software install: Ask if Personal or Company laptop
             if (ticketType === 'software_install') {
                 const installArticle = knowledgeBase.findArticle(text) || knowledgeBase.findArticleByIssueType('software_install');
 
                 conversationManager.updateConversationState(userId, {
-                    state: 'AWAITING_MODAL_DETAILS',
+                    state: 'AWAITING_LAPTOP_TYPE',
                     pendingTicketData: {
                         subject: `Software Installation Approval Required`,
                         description: `User requested a software installation.\n\nOriginal request: "${text}"`,
@@ -188,8 +188,8 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 });
 
                 await smartSay({
-                    text: "I'll help you request IT Approval for this software installation.",
-                    blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval for this software installation.`)
+                    text: "Are you installing this on a Personal Laptop or a Company Laptop?",
+                    blocks: messageViews.laptopTypeSelection("Are you installing this on a Personal Laptop or a Company Laptop?")
                 });
                 return;
             }
@@ -611,6 +611,72 @@ app.action('report_issue', async ({ body, client, ack }) => {
     }
 });
 
+// Button: Company Laptop Install
+app.action('company_laptop_install', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const isDM = channelId.startsWith('D');
+    
+    // Change state to AWAITING_MODAL_DETAILS
+    conversationManager.updateConversationState(userId, {
+        state: 'AWAITING_MODAL_DETAILS'
+    });
+
+    const msgArgs = {
+        text: "I'll help you request IT Approval for this software installation.",
+        blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval for this software installation on your Company Laptop.`)
+    };
+
+    if (isDM) {
+        await client.chat.postMessage({ channel: channelId, ...msgArgs });
+    } else {
+        await client.chat.postEphemeral({ channel: channelId, user: userId, ...msgArgs });
+    }
+});
+
+// Button: Personal Laptop Install
+app.action('personal_laptop_install', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const isDM = channelId.startsWith('D');
+    const state = conversationManager.getConversationState(userId);
+
+    const article = state.pendingTicketData?.pendingInstallArticle;
+    
+    const smartSay = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        if (isDM) {
+            return await client.chat.postMessage({ channel: channelId, ...args });
+        } else {
+            return await client.chat.postEphemeral({ channel: channelId, user: userId, ...args });
+        }
+    };
+
+    if (!article || !article.steps || article.steps.length === 0) {
+        await smartSay("I couldn't find the installation steps for this software. I'll help you raise a ticket instead.");
+        conversationManager.updateConversationState(userId, { state: 'AWAITING_MODAL_DETAILS' });
+        await smartSay({
+            blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval.`)
+        });
+        return;
+    }
+
+    conversationManager.updateConversationState(userId, {
+        step: 1,
+        currentArticle: article,
+        ticketCreated: false,
+        attempts: 0
+    });
+
+    const firstStep = article.steps[0];
+    await smartSay({
+        text: `You can proceed with the installation yourself! Let's get started.`,
+        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, article.steps.length, article.id)
+    });
+});
+
 // Button: Step Solved
 app.action('step_solved', async ({ body, ack, say, client }) => {
     await ack();
@@ -718,14 +784,15 @@ app.action('open_details_modal', async ({ body, ack, client }) => {
         return;
     }
 
-    // Ask for Hostname for everything EXCEPT identity-only issues like domain lock or password reset
-    const noHostnameTypes = ['domain_lock', 'password_reset'];
+    // Ask for Hostname for everything EXCEPT identity-only issues like domain lock, password reset, biometric, and social media access
+    const noHostnameTypes = ['domain_lock', 'password_reset', 'biometric', 'social_media_access'];
     const requiresHostname = !noHostnameTypes.includes(state.pendingTicketData.type);
+    const isSoftwareInstall = state.pendingTicketData.type === 'software_install';
 
     try {
         await client.views.open({
             trigger_id: body.trigger_id,
-            view: modalViews.collectDetailsModal(requiresHostname)
+            view: modalViews.collectDetailsModal(requiresHostname, isSoftwareInstall)
         });
         
         // Save channelId explicitly since modal submissions lose channel interaction context
