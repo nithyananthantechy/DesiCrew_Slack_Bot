@@ -80,7 +80,8 @@ const fallbackDetectIntent = (text) => {
     }
 
     // --- SOFTWARE INSTALL REQUEST ---
-    if (lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) {
+    const isAlreadyInstalled = /(already|have|has|had).{0,15}install|login/i.test(lower);
+    if ((lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) && !isAlreadyInstalled) {
         return { issue_type: "software_install", action: "quick_ticket", needs_troubleshooting: false };
     }
 
@@ -271,7 +272,7 @@ Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT s
   "action": "create_ticket/troubleshoot/answer/quick_ticket"
 }
 Rules:
-- HIGHEST PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software".
+- HIGHEST PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software". BUT if the user says they "already installed" it or are having "login issues", it is NOT an install request; classify as "troubleshoot" and issue_type="software".
 - If user mentions "domain lock", "password reset", or wants to "provide/grant/request/get biometric access" (NOT a biometric device problem), action="quick_ticket".
 - If user wants "access to WhatsApp/Instagram/social media" (NOT an app crash/issue), action="quick_ticket" and issue_type="social_media_access".
 - If user says a social media or messaging app "is not working", "crashing", or "has an issue", action="troubleshoot" and issue_type="social_media_issue".

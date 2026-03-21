@@ -138,8 +138,10 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         const isSocialAccessRequest = hasSocialApp && (/need.{0,15}access|request.{0,15}access|provide.{0,15}access|grant.{0,15}access|want.{0,15}access|enable.{0,15}access/i.test(lowerText) || 
             lowerText.includes('access') || lowerText.includes('unblock') || lowerText.includes('enable'));
 
+        const isInstallRequest = lowerText.includes('install') && !/(already|have|has|had).{0,15}install|login/i.test(lowerText);
+
         const isRequest = lowerText.includes('new ') || lowerText.includes('request') ||
-            lowerText.includes('ticket') || lowerText.includes('raise') || lowerText.includes('install') ||
+            lowerText.includes('ticket') || lowerText.includes('raise') || isInstallRequest ||
             isDomainLock || isPasswordReset || isBiometricAccessRequest || isSocialAccessRequest;
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
@@ -566,13 +568,16 @@ app.message(async ({ message, say, client, logger }) => {
 
     // Knowledge Base Check
     // Skip for "new" or "request" to allow AI to handle them as tickets
-    const shouldSkipKB = cleanedText.toLowerCase().includes('new') ||
-        cleanedText.toLowerCase().includes('request') ||
-        cleanedText.toLowerCase().includes('ticket') ||
-        cleanedText.toLowerCase().includes('raise') ||
-        cleanedText.toLowerCase().includes('install') ||
-        /domain.{0,4}lock|domainlock(ed)?/i.test(cleanedText) ||
-        /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(cleanedText);
+    const lowerTextForKB = cleanedText.toLowerCase();
+    const isInstallReqStr = lowerTextForKB.includes('install') && !/(already|have|has|had).{0,15}install|login/i.test(lowerTextForKB);
+
+    const shouldSkipKB = lowerTextForKB.includes('new') ||
+        lowerTextForKB.includes('request') ||
+        lowerTextForKB.includes('ticket') ||
+        lowerTextForKB.includes('raise') ||
+        isInstallReqStr ||
+        /domain.{0,4}lock|domainlock(ed)?/i.test(lowerTextForKB) ||
+        /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(lowerTextForKB);
 
     const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
