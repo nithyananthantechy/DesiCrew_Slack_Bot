@@ -672,17 +672,36 @@ app.action('personal_laptop_install', async ({ body, ack, client }) => {
         return;
     }
 
+    // Clone the article to avoid modifying the original cached version
+    const activeArticle = JSON.parse(JSON.stringify(article));
+
+    // Remove the "Get IT Approval First" step if it's a personal laptop
+    if (activeArticle.steps && activeArticle.steps.length > 0) {
+        if (activeArticle.steps[0].title?.includes('IT Approval') || activeArticle.steps[0].instruction?.includes('Get IT Approval')) {
+            activeArticle.steps.shift(); // Remove the first step
+        }
+    }
+
+    if (activeArticle.steps.length === 0) {
+        await smartSay("I couldn't find the installation steps for this software. I'll help you raise a ticket instead.");
+        conversationManager.updateConversationState(userId, { state: 'AWAITING_MODAL_DETAILS' });
+        await smartSay({
+            blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval.`)
+        });
+        return;
+    }
+
     conversationManager.updateConversationState(userId, {
         step: 1,
-        currentArticle: article,
+        currentArticle: activeArticle,
         ticketCreated: false,
         attempts: 0
     });
 
-    const firstStep = article.steps[0];
+    const firstStep = activeArticle.steps[0];
     await smartSay({
         text: `You can proceed with the installation yourself! Let's get started.`,
-        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, article.steps.length, article.id)
+        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, activeArticle.steps.length, activeArticle.id)
     });
 });
 
