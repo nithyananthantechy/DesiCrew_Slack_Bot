@@ -126,7 +126,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
         const lowerText = text.toLowerCase();
         
-        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}login|can'?t.{0,10}access.{0,10}account|login.{0,10}issue/i.test(lowerText);
+        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}access.{0,10}account/i.test(lowerText);
         const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
         
         const isBiometricAccessRequest = lowerText.includes('provide biometric') || lowerText.includes('grant biometric') ||
@@ -248,9 +248,13 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
             let article = null;
 
             try {
-                // Step 1: SEARCH BY ISSUE TYPE FROM AI (Original text check already done at top)
-                if (intent.issue_type) {
-                    console.log(`🔍 Step 2: Searching by issue_type: "${intent.issue_type}"`);
+                // Step 1: SEARCH BY ORIGINAL TEXT FROM USER (Since it may have been skipped earlier)
+                console.log(`🔍 Step 2: Searching KB by original text: "${text}"`);
+                article = knowledgeBase.findArticle(text);
+
+                // Step 2: SEARCH BY ISSUE TYPE FROM AI (If no article found yet)
+                if (!article && intent.issue_type) {
+                    console.log(`🔍 Step 3: Searching by issue_type: "${intent.issue_type}"`);
                     article = knowledgeBase.findArticle(intent.issue_type);
                 }
 
