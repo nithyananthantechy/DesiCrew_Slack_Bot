@@ -9,11 +9,7 @@
         "power adapter",
         "plugged in not charging",
         "battery not charging",
-        "charging issue",
-        "laptop",
-        "laptop power",
-        "power issue",
-        "power on"
+        "charging issue"
     ],
     "steps": [
         {

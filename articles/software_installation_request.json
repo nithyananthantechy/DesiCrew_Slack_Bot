@@ -13,7 +13,7 @@
       "instruction": "*🖥️ Step 3: Check If You Have Admin Rights*\n• Try right-clicking the installer → *Run as Administrator*.\n• If it asks for an admin password, you need IT to install it for you remotely or in-person.\n_Expected: Installer runs or you confirm you need IT assistance._"
     },
     {
-      "instruction": "*📥 Step 4: Download and Install*\n• Use only the official download link provided by IT or the software vendor.\n• For *WPS Office*, use the IT-provided link. Run the `.exe`, accept the license, and click *Install Now*.\n• Wait for completion (2-5 minutes).\n_Expected: Software installs successfully and is ready to use._"
+      "instruction": "*📥 Step 4: Download and Install*\n• Use only the official download link provided by IT or the software vendor.\n• Run the downloaded `.exe` or installer file, accept the license agreement, and click *Install Now*.\n• Wait for the installation to complete (2-5 minutes).\n_Expected: Software installs successfully and is ready to use._"
     },
     {
       "instruction": "*✅ Step 5: Notify IT After Install*\n• Once installed, inform the IT Helpdesk that the installation is complete.\n• If you face any error during installation, raise a ticket with the error screenshot.\n_Expected: IT is informed and can verify the install if needed._"

@@ -33,8 +33,55 @@ if (config.ollama.baseUrl) {
 const fallbackDetectIntent = (text) => {
     const lower = text.toLowerCase();
 
+    // --- VAGUE QUERY CLARIFICATION ---
+    const isVagueError = /^error$/i.test(lower) || /^issue$/i.test(lower) || /^(it is |it's |its |this is |it )?not.{0,10}working$/i.test(lower) || /error.{0,10}showing/i.test(lower) || /page.{0,10}not.{0,10}found/i.test(lower);
+    const isVagueNotification = /notification.{0,20}(not )?(receiv|work|come)/i.test(lower) && !lower.includes('email') && !lower.includes('slack') && !lower.includes('mfa') && !lower.includes('teams');
+
+    if (isVagueError || isVagueNotification) {
+        return { issue_type: "general", action: "clarification_needed", needs_troubleshooting: false };
+    }
+
+    // --- MFA FAILURE (handle BEFORE OTP to prevent 'authenticator code' matching OTP) ---
+    if (/mfa.{0,20}(fail|not.work|issue|problem|invalid|wrong|error)|multi.?factor.{0,20}(fail|not.work|issue)|(authenticator|2fa).{0,20}(fail|not.work|invalid|wrong|expired|issue)/i.test(lower)) {
+        return { issue_type: "mfa_failure", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- OTP / VERIFICATION CODE (handle BEFORE software_install to prevent Zoho OTP → install flow) ---
+    const isOtpIssue = /otp.{0,30}(not|no|didn'?t|never|haven'?t|not.{0,5}(receiv|arriv|come|get))|not.{0,20}receiv.{0,20}otp|(verification|auth).{0,15}code.{0,20}(not|no|fail|wrong|invalid|expired|receiv)|not.{0,10}receiv.{0,15}(verif|code|otp)|(otp|code).{0,10}not.{0,10}(receiv|work|arriv|come)/i.test(lower);
+    if (isOtpIssue) {
+        return { issue_type: "email_otp", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- EMAIL ACCOUNT LOCKED (handle BEFORE domain_lock to give troubleshooting first) ---
+    const isEmailAccountLocked = /email.{0,20}(account|mail).{0,15}lock|email.{0,20}lock|mail.{0,20}lock|(account|mail).{0,15}lock.{0,15}email|zoho.{0,20}lock|outlook.{0,20}lock|gmail.{0,20}lock/i.test(lower);
+    if (isEmailAccountLocked) {
+        return { issue_type: "email_account_locked", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- EMAIL SESSION EXPIRED ---
+    const isEmailSession = /email.{0,20}session.{0,20}(expir|timeout|logout|log.?out)|session.{0,20}expir.{0,20}(email|mail|zoho|outlook)|email.{0,15}keeps?.{0,15}(log.?out|sign.?out|expir)|keeps?.{0,15}(log.?out|sign.?out).{0,20}(email|mail|zoho)/i.test(lower);
+    if (isEmailSession) {
+        return { issue_type: "email_session", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- HIGH CPU ---
+    if (/high.{0,5}cpu|cpu.{0,10}(high|usage|spike|100|maxed)|processor.{0,10}(high|usage)|cpu.{0,5}running.{0,5}(high|100)|running.{0,5}at.{0,5}100/i.test(lower)) {
+        return { issue_type: "high_cpu", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- SLOW INTERNET ---
+    if (/slow.{0,10}internet|internet.{0,10}slow|slow.{0,10}(network|connection|browsing|speed)|internet.{0,10}(speed|lagging|lag)|poor.{0,10}internet|bad.{0,10}internet|video.{0,10}buffer/i.test(lower)) {
+        return { issue_type: "slow_internet", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
+    // --- MFA FAILURE ---
+    if (/mfa.{0,20}(fail|not.work|issue|problem|invalid|wrong|error)|multi.?factor.{0,20}(fail|not.work|issue)|(authenticator|2fa).{0,20}(fail|not.work|invalid|wrong|expired|issue)/i.test(lower)) {
+        return { issue_type: "mfa_failure", action: "troubleshoot", needs_troubleshooting: true };
+    }
+
     // --- QUICK TICKET FAST PATH (typo-tolerant) ---
-    const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lower);
+    // Note: domain_lock check EXCLUDES email-specific patterns (those are handled above as troubleshoot)
+    const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lower) && !isEmailAccountLocked;
     const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lower);
 
     if (isDomainLock) {
@@ -80,8 +127,9 @@ const fallbackDetectIntent = (text) => {
     }
 
     // --- SOFTWARE INSTALL REQUEST ---
+    // Note: OTP check above ensures "zoho otp" won't fall through to software_install
     const isAlreadyInstalled = /(already|have|has|had).{0,15}install|login/i.test(lower);
-    if ((lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) && !isAlreadyInstalled) {
+    if ((lower.includes('install') || lower.includes('need to install') || lower.includes('install package') || lower.includes('request software') || lower.includes('wps') || lower.includes('software request')) && !isAlreadyInstalled && !isOtpIssue) {
         return { issue_type: "software_install", action: "quick_ticket", needs_troubleshooting: false };
     }
 
@@ -106,7 +154,10 @@ const fallbackDetectIntent = (text) => {
     }
 
     // --- SLOW / PERFORMANCE ---
-    if (lower.includes('slow') || lower.includes('hanging') || lower.includes('freezing') || lower.includes('frozen') || lower.includes('lag') || lower.includes('performance') || lower.includes('unresponsive') || lower.includes('not responding') || lower.includes('high cpu') || lower.includes('ram')) {
+    if (lower.includes('hanging') || lower.includes('freezing') || lower.includes('frozen') || lower.includes('lag') || lower.includes('performance') || lower.includes('unresponsive') || lower.includes('not responding') || lower.includes('ram')) {
+        return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
+    }
+    if (lower.includes('slow') && !lower.includes('internet') && !lower.includes('network') && !lower.includes('wifi') && !lower.includes('wi-fi')) {
         return { issue_type: "software", action: "troubleshoot", needs_troubleshooting: true };
     }
 
@@ -177,6 +228,81 @@ const detectIntent = async (userMessage) => {
             needs_troubleshooting: false
         };
     }
+    // 1.45 FAST VAGUE QUERY CLARIFICATION check
+    const isVagueErrorFast = /^error$/i.test(lowerText) || /^issue$/i.test(lowerText) || /^(it is |it's |its |this is |it )?not.{0,10}working$/i.test(lowerText) || /error.{0,10}showing/i.test(lowerText) || /page.{0,10}not.{0,10}found/i.test(lowerText);
+    const isVagueNotificationFast = /notification.{0,20}(not )?(receiv|work|come)/i.test(lowerText) && !lowerText.includes('email') && !lowerText.includes('slack') && !lowerText.includes('mfa') && !lowerText.includes('teams');
+
+    if (isVagueErrorFast || isVagueNotificationFast) {
+        console.log(`⚡ Fast-path clarification needed match: "${lowerText}"`);
+        return {
+            action: "clarification_needed",
+            issue_type: "general",
+            needs_troubleshooting: false
+        };
+    }
+
+    // 1.46 FAST MFA FAILURE check (MUST be BEFORE OTP check to avoid 'authenticator code' matching OTP)
+    if (/mfa.{0,20}(fail|not.work|issue|problem|invalid|wrong|error)|multi.?factor.{0,20}(fail|not.work|issue)|(authenticator|2fa).{0,20}(fail|not.work|invalid|wrong|expired|issue)/i.test(lowerText)) {
+        console.log(`⚡ Fast-path MFA failure match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "mfa_failure",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.46 FAST OTP / VERIFICATION CODE check (MUST be before software_install to prevent Zoho OTP → install)
+    const isOtpIssueFast = /otp.{0,30}(not|no|didn'?t|never|haven'?t|not.{0,5}(receiv|arriv|come|get))|not.{0,20}receiv.{0,20}otp|(verification|auth).{0,15}code.{0,20}(not|no|fail|wrong|invalid|expired|receiv)|not.{0,10}receiv.{0,15}(verif|code|otp)|(otp|code).{0,10}not.{0,10}(receiv|work|arriv|come)/i.test(lowerText);
+    if (isOtpIssueFast) {
+        console.log(`⚡ Fast-path OTP issue match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "email_otp",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.47 FAST EMAIL ACCOUNT LOCKED check (MUST be before domain_lock to give troubleshooting first)
+    const isEmailAccountLockedFast = /email.{0,20}(account|mail).{0,15}lock|email.{0,20}lock|mail.{0,20}lock|(account|mail).{0,15}lock.{0,15}email|zoho.{0,20}lock|outlook.{0,20}lock|gmail.{0,20}lock/i.test(lowerText);
+    if (isEmailAccountLockedFast) {
+        console.log(`⚡ Fast-path email account locked match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "email_account_locked",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.48 FAST EMAIL SESSION EXPIRED check
+    const isEmailSessionFast = /email.{0,20}session.{0,20}(expir|timeout|logout|log.?out)|session.{0,20}expir.{0,20}(email|mail|zoho|outlook)|email.{0,15}keeps?.{0,15}(log.?out|sign.?out|expir)|keeps?.{0,15}(log.?out|sign.?out).{0,20}(email|mail|zoho)/i.test(lowerText);
+    if (isEmailSessionFast) {
+        console.log(`⚡ Fast-path email session expired match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "email_session",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.49 FAST HIGH CPU check
+    if (/high.{0,5}cpu|cpu.{0,10}(high|usage|spike|100|maxed)|processor.{0,10}(high|usage)|cpu.{0,5}running.{0,5}(high|100)|running.{0,5}at.{0,5}100/i.test(lowerText)) {
+        console.log(`⚡ Fast-path high CPU match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "high_cpu",
+            needs_troubleshooting: true
+        };
+    }
+
+    // 1.50 FAST SLOW INTERNET check
+    if (/slow.{0,10}internet|internet.{0,10}slow|slow.{0,10}(network|connection|browsing|speed)|internet.{0,10}(speed|lagging|lag)|poor.{0,10}internet|bad.{0,10}internet/i.test(lowerText)) {
+        console.log(`⚡ Fast-path slow internet match: "${lowerText}"`);
+        return {
+            action: "troubleshoot",
+            issue_type: "slow_internet",
+            needs_troubleshooting: true
+        };
+    }
 
     // 1.5 FAST BIOMETRIC REQUEST check ("provide/grant biometric access" → ticket, "biometric issue" → troubleshoot)
     const isBiometricIssue = /biometric.{0,20}(issue|problem|not work|fail|error|trouble)/i.test(lowerText) ||
@@ -239,7 +365,8 @@ const detectIntent = async (userMessage) => {
     }
 
     // 1.6 FAST DOMAIN LOCK & PASSWORD RESET check (typo-tolerant using expanded regex)
-    const isDomainLockFast = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lowerText);
+    // IMPORTANT: domain_lock excludes email-specific lock patterns (those are handled above as email_account_locked)
+    const isDomainLockFast = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}disable(d)?|locked.{0,10}out/i.test(lowerText) && !isEmailAccountLockedFast;
     const isPasswordResetFast = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
 
     if (isDomainLockFast) {
@@ -264,16 +391,23 @@ const detectIntent = async (userMessage) => {
 You are a concierge IT helpdesk assistant. Analyze: "${userMessage}"
 Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT schema:
 {
-  "issue_type": "network/printer/password/software/hardware/email/vpn/biometric/freshservice/domain_lock/password_reset/general_question",
+  "issue_type": "network/printer/password/software/hardware/email/email_otp/email_account_locked/email_session/high_cpu/slow_internet/mfa_failure/vpn/biometric/freshservice/domain_lock/password_reset/social_media_access/social_media_issue/general_question",
   "needs_troubleshooting": true,
   "urgency": "medium",
   "suggested_article": null,
   "direct_answer": "friendly response",
-  "action": "create_ticket/troubleshoot/answer/quick_ticket"
+  "action": "create_ticket/troubleshoot/answer/quick_ticket/clarification_needed"
 }
 Rules:
-- HIGHEST PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software". BUT if the user says they "already installed" it or are having "login issues", it is NOT an install request; classify as "troubleshoot" and issue_type="software".
-- If user mentions "domain lock", "password reset", or wants to "provide/grant/request/get biometric access" (NOT a biometric device problem), action="quick_ticket".
+- HIGHEST PRIORITY: If user provides vague inputs like "error showing on page", "notification not received", "error", or "it's not working" without specifying the context or application, action="clarification_needed".
+- HIGHEST PRIORITY: If user mentions "OTP not received", "verification code not received", "OTP issue" (including for Zoho, Outlook, Gmail), action="troubleshoot" and issue_type="email_otp". Do NOT classify as software_install.
+- If user says their email account is "locked" or "blocked" (e.g. "email account locked", "zoho mail locked"), action="troubleshoot" and issue_type="email_account_locked". Do NOT raise a domain_lock ticket for email lock issues.
+- If user says "email session expired", "keeps logging out of email", "email session timeout", action="troubleshoot" and issue_type="email_session".
+- If user mentions "high CPU", "CPU usage high", "CPU 100%", action="troubleshoot" and issue_type="high_cpu".
+- If user mentions "slow internet", "internet slow", "internet lagging", "poor network speed", action="troubleshoot" and issue_type="slow_internet".
+- If user mentions "MFA not working", "authenticator code wrong", "2FA failure", "multi-factor authentication failure", action="troubleshoot" and issue_type="mfa_failure".
+- SECOND PRIORITY: If user mentions "software installation" / "install [software]" (e.g. "install forticlient vpn"), action="quick_ticket" and issue_type="software_install". Do not categorize as "vpn" or "software". BUT if the user says they "already installed" it or are having "login issues", it is NOT an install request; classify as "troubleshoot" and issue_type="software".
+- If user mentions "domain lock" (NOT email lock), "password reset", or wants to "provide/grant/request/get biometric access" (NOT a biometric device problem), action="quick_ticket".
 - If user wants "access to WhatsApp/Instagram/social media" (NOT an app crash/issue), action="quick_ticket" and issue_type="social_media_access".
 - If user says a social media or messaging app "is not working", "crashing", or "has an issue", action="troubleshoot" and issue_type="social_media_issue".
 - If user asks to "create a ticket/raise issue/human", action="create_ticket".

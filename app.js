@@ -126,7 +126,8 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
         const lowerText = text.toLowerCase();
         
-        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}lock(ed)?|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}access.{0,10}account/i.test(lowerText);
+        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}access.{0,10}account/i.test(lowerText) &&
+            !/email.{0,20}(account|mail).{0,15}lock|email.{0,20}lock|mail.{0,20}lock|zoho.{0,20}lock|outlook.{0,20}lock|gmail.{0,20}lock/i.test(lowerText);
         const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
         
         const isBiometricAccessRequest = lowerText.includes('provide biometric') || lowerText.includes('grant biometric') ||
@@ -143,6 +144,7 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         const isRequest = lowerText.includes('new ') || lowerText.includes('request') ||
             lowerText.includes('ticket') || lowerText.includes('raise') || isInstallRequest ||
             isDomainLock || isPasswordReset || isBiometricAccessRequest || isSocialAccessRequest;
+
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -169,6 +171,13 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
         // 2. Handle specific actions
         const isQuickTicket = intent.action === 'quick_ticket';
         const isTicketRequest = text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise') || intent.action === 'create_ticket';
+
+        if (intent.action === 'clarification_needed') {
+            await smartSay({
+                text: "I need a bit more detail to help you effectively. Could you please clarify what is not working? For example, which application is showing the error, or where exactly are you not receiving notifications?"
+            });
+            return;
+        }
 
         if (isQuickTicket) {
             const ticketType = intent.issue_type; // domain_lock, password_reset, biometric, software_install
@@ -320,12 +329,19 @@ async function processMessage(text, userId, channelId, messageTs, say, client, l
                 }
 
                 if (dynamicSteps && dynamicSteps.length > 0) {
+                    const newArticleId = `auto_${intent.issue_type || 'general'}_${Date.now()}`;
                     article = {
-                        id: `dynamic_${Date.now()}`,
-                        title: `Help: ${text.slice(0, 50)}`,
+                        id: newArticleId,
+                        title: `Auto-Learned: ${text.length > 40 ? text.slice(0, 37) + '...' : text}`,
+                        description: `Automatically generated troubleshooting steps for: ${text}`,
+                        issue_type: intent.issue_type || "general",
+                        keywords: text.toLowerCase().split(/[\s,]+/).filter(w => w.length >= 3),
                         steps: dynamicSteps
                     };
-                    console.log(`✅ Generated ${dynamicSteps.length} AI-specific steps`);
+                    
+                    // 🧠 AI Self-Learning: Save to KB
+                    await knowledgeBase.saveArticle(article);
+                    console.log(`✅ Generated and saved ${dynamicSteps.length} AI-specific steps as article: ${newArticleId}`);
 
                     conversationManager.updateConversationState(userId, {
                         step: 1,
